@@ -6,5 +6,6 @@ int main(int argc, char** argv) {
 	
 	cout<<"Odio a emiro";
 	cout<<"yo amo a emiro";
+
 	return 0;
 }
