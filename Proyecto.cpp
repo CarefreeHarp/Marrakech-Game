@@ -5,5 +5,6 @@
 int main(int argc, char** argv) {
 	
 	cout<<"Odio a emiro";
+	cout<<"Emiro tiene VIH";
 	return 0;
 }
