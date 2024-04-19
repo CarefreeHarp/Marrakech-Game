@@ -42,7 +42,7 @@ int main()
 	cout<<"SE LE OTORGA 10 ALFOMBRAS Y 10 MONEDAS A CADA JUGADOR!!"<<endl<<endl<<endl<<"HASSAM ESTA REPRESENTADO POR: "<<endl<<"Hassam hacia arriba: "<<char(193)<<endl<<"Hassam hacia la derecha: "<<char(195)<<endl<<"Hassam hacia abajo: "<<char(194)<<endl<<"Hassam hacia la izquierda: "<<char(180)<<endl<<endl<<endl<<"QUE EMPIECE EL JUEGO!!!"<<endl<<endl;
 	
 	
-	for(i=0;i<7;i++)
+	for(i=0;i<7;i++)											//llena la matriz de alfombras y coloca a hassam en el medio
 	{
 		for(j=0;j<7;j++)
 		{
@@ -53,9 +53,9 @@ int main()
 			}
 		}
 	}
-	while(ganador==false)
+	while(ganador==false)										//mientras no encuentre ganador, se ejecutará todo el juego
 	{
-		for(i=0;i<7;i++)
+		for(i=0;i<7;i++)										//imprime el tablero
 		{
 			for(j=0;j<7;j++)
 			{
@@ -66,6 +66,6 @@ int main()
 		ganador=true;
 	}
 
-	color(hConsole, 224);
+//	color(hConsole, 224);
 	return 0;
 }
