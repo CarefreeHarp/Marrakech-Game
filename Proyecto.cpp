@@ -1,6 +1,8 @@
 #include <iostream>
 #include <windows.h>											//linea para poner color
-#include <mmsystem.h>											//Linea para poner musica
+#include <mmsystem.h>											
+#include <ctime>
+//#include <cstdlib>
 #define color SetConsoleTextAttribute							//linea para poner color
 using namespace std;
 struct player													//declaracion de player como estructura
@@ -9,6 +11,12 @@ struct player													//declaracion de player como estructura
 	int alfombras;
 	int dirhams;
 };
+struct Desplazamiento
+{
+	int posx;
+	int posy;
+};
+Desplazamiento movimiento(char tablero[][7],Desplazamiento mov);
 
 
 
@@ -28,6 +36,8 @@ int main()
     bool ganador=false;
     char tablero[7][7];
     int i,j;
+    Desplazamiento mov;
+    bool turno=true;
     
     
     
@@ -50,6 +60,8 @@ int main()
 			if((i==3)&&(j==3))
 			{
 				tablero[i][j]=char(194);
+				mov.posx=j;
+				mov.posy=i;
 			}
 		}
 	}
@@ -63,9 +75,40 @@ int main()
 			}
 			cout<<endl<<endl;
 		}
+		if(turno==true)
+		{
+			cout<<endl<<"Turno de "<<player1.nombre<<" !";
+			mov=movimiento(tablero,mov);
+		}
+		else
+		{
+			cout<<endl<<"Turno de "<<player2.nombre<<" !";
+			mov=movimiento(tablero,mov);
+		}
 		ganador=true;
 	}
 
 //	color(hConsole, 224);
 	return 0;
+}
+
+Desplazamiento movimiento(char tablero[][7],Desplazamiento mov)
+{
+	int casillas,op=0;
+	srand(time(0));
+	cout<<endl<<"Hacia que lado quiere girar a hassam";
+	cout<<endl<<"Recuerde que el minimo numero es 1 y el maximo es 4"<<endl<<"Digite 1 para tirar el dado!! "<<endl;
+	do
+	{
+		cin>>op;
+		switch(op)
+		{
+			case 1: casillas=(1+rand()%4);
+					break;
+			default: cout<<"Esa opcion no existe, intente de nuevo"<<endl;
+					break;
+		}
+	}while(op!=1);
+	cout<<endl<<"le salio el numero "<<casillas<<" !!";
+
 }
