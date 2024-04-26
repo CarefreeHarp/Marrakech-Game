@@ -21,7 +21,13 @@ struct alfombra
 	posicion alf1;
 	posicion alf2;
 };
-posicion movimiento(char tablero[][7],posicion hassampos);
+struct caracteristicas
+{
+	posicion pos;
+	char hassam;
+};
+caracteristicas movimiento(char tablero[][7],caracteristicas hassam);
+caracteristicas mediavuelta(caracteristicas hassam,int i, int casillas);
 
 
 
@@ -41,7 +47,7 @@ int main()
     bool ganador=false;
     char tablero[7][7];
     int i,j;
-    posicion hassampos;
+    caracteristicas hassam;
     bool turno=true;
     
     
@@ -65,8 +71,8 @@ int main()
 			if((i==3)&&(j==3))
 			{
 				tablero[i][j]=char(194);
-				hassampos.posx=j;
-				hassampos.posy=i;
+				hassam.pos.posx=j;
+				hassam.pos.posy=i;
 			}
 		}
 	}
@@ -83,26 +89,86 @@ int main()
 		if(turno==true)
 		{
 			cout<<endl<<"Turno de "<<player1.nombre<<" !";
-			hassampos=movimiento(tablero,hassampos);
+			hassam=movimiento(tablero,hassam);
 		}
 		else
 		{
 			cout<<endl<<"Turno de "<<player2.nombre<<" !";
-			hassampos=movimiento(tablero,hassampos);
+			hassam=movimiento(tablero,hassam);
 		}
-		ganador=true;
 	}
 
 //	color(hConsole, 224);
 	return 0;
 }
 
-posicion movimiento(char tablero[][7],posicion hassampos)
+
+
+
+
+caracteristicas mediavuelta(caracteristicas hassam,int i, int casillas)
 {
-	int casillas,op=0;
+	bool vueltarealizada=false;
+	if(hassam.pos.posx<0)
+	{
+	 	cout<<"Hassam se sale por la izquierda del tablero!!"<<endl<<"Se ha hecho un giro!!";
+	 	if(hassam.pos.posy==0)
+	 	{
+	 //		caracteristicas
+		}
+	}	
+	else if(hassam.pos.posx>7)
+		 {
+			
+		 }
+		 else if(hassam.pos.posy<0)
+     	 	  {
+				
+			  }
+			  else if(hassam.pos.posy>7)
+     			   {
+     			   	
+		  		   }
+	return hassam;
+}
+
+
+
+
+
+caracteristicas movimiento(char tablero[][7],caracteristicas hassam)
+{
+	int casillas,op=0,direccion;
+	int i;
+	bool cumple=false;
 	srand(time(0));
-	cout<<endl<<"Hacia que lado quiere girar a hassam";
-	cout<<endl<<"Recuerde que el minimo numero es 1 y el maximo es 4"<<endl<<"Digite 1 para tirar el dado!! "<<endl;
+	cout<<endl<<"Hacia que lado quiere girar a hassam"<<endl<<"Digite 1 si quiere hacia arriba"<<endl<<"Digite 2 si quiere hacia abajo"<<endl<<"Digite 3 si quiere hacia la derecha"<<endl<<"Digite 4 si quiere a la izquierda"<<endl;
+	do
+	{
+		cin>>direccion;
+		switch(direccion)
+		{
+			case 1: tablero[hassam.pos.posy][hassam.pos.posx]=char(0xDB);
+					hassam.hassam=char(193);
+					cumple=true;
+						break;
+			case 2:	tablero[hassam.pos.posy][hassam.pos.posx]=char(0xDB);
+					hassam.hassam=char(194);
+					cumple=true;
+						break;
+			case 3:	tablero[hassam.pos.posy][hassam.pos.posx]=char(0xDB);
+					hassam.hassam=char(195);
+					cumple=true;
+						break;
+			case 4:	tablero[hassam.pos.posy][hassam.pos.posx]=char(0xDB);
+					hassam.hassam=char(180);
+					cumple=true;
+						break;	
+			default: cout<<"opcion inexistente"<<endl;
+						break;
+		}	
+	}while(cumple==false);
+	cout<<endl<<"Digite 1 para tirar el dado!! "<<endl<<"Recuerde que el minimo numero es 1 y el maximo es 4"<<endl;
 	do
 	{
 		cin>>op;
@@ -114,9 +180,46 @@ posicion movimiento(char tablero[][7],posicion hassampos)
 					break;
 		}
 	}while(op!=1);
-	cout<<endl<<"le salio el numero "<<casillas<<" !!";
-	return hassampos;
+	cout<<endl<<"El dado marca el numero "<<casillas<<" !!"<<endl;
+	if(direccion==1)
+	{
+		for(i=0;i<casillas;i++)
+		{
+			hassam.pos.posy--;
+			hassam=mediavuelta(hassam,i,casillas);	
+		}
+	}
+	else if(direccion==2)
+		 {
+			for(i=0;i<casillas;i++)
+			{
+				hassam.pos.posy++;
+				hassam=mediavuelta(hassam,i,casillas);	
+			}
+		 }
+		 else if(direccion==3)
+		 	  {
+				for(i=0;i<casillas;i++)
+				{
+					hassam.pos.posx++;	
+					hassam=mediavuelta(hassam,i,casillas);
+				}
+			  }
+			  else
+			  {
+				for(i=0;i<casillas;i++)
+				{
+					hassam.pos.posx--;	
+					hassam=mediavuelta(hassam,i,casillas);
+				}
+			  }
+	tablero[hassam.pos.posy][hassam.pos.posx]=hassam.hassam;
+	return hassam;
 }
+
+
+
+
 
 //PONER ALFOMBRAS
 // se manda estructura de pos de hassam
