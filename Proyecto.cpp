@@ -11,12 +11,17 @@ struct player													//declaracion de player como estructura
 	int alfombras;
 	int dirhams;
 };
-struct Desplazamiento
+struct posicion
 {
 	int posx;
 	int posy;
 };
-Desplazamiento movimiento(char tablero[][7],Desplazamiento mov);
+struct alfombra
+{
+	posicion alf1;
+	posicion alf2;
+};
+posicion movimiento(char tablero[][7],posicion hassampos);
 
 
 
@@ -36,7 +41,7 @@ int main()
     bool ganador=false;
     char tablero[7][7];
     int i,j;
-    Desplazamiento mov;
+    posicion hassampos;
     bool turno=true;
     
     
@@ -60,8 +65,8 @@ int main()
 			if((i==3)&&(j==3))
 			{
 				tablero[i][j]=char(194);
-				mov.posx=j;
-				mov.posy=i;
+				hassampos.posx=j;
+				hassampos.posy=i;
 			}
 		}
 	}
@@ -78,12 +83,12 @@ int main()
 		if(turno==true)
 		{
 			cout<<endl<<"Turno de "<<player1.nombre<<" !";
-			mov=movimiento(tablero,mov);
+			hassampos=movimiento(tablero,hassampos);
 		}
 		else
 		{
 			cout<<endl<<"Turno de "<<player2.nombre<<" !";
-			mov=movimiento(tablero,mov);
+			hassampos=movimiento(tablero,hassampos);
 		}
 		ganador=true;
 	}
@@ -92,7 +97,7 @@ int main()
 	return 0;
 }
 
-Desplazamiento movimiento(char tablero[][7],Desplazamiento mov)
+posicion movimiento(char tablero[][7],posicion hassampos)
 {
 	int casillas,op=0;
 	srand(time(0));
@@ -110,5 +115,22 @@ Desplazamiento movimiento(char tablero[][7],Desplazamiento mov)
 		}
 	}while(op!=1);
 	cout<<endl<<"le salio el numero "<<casillas<<" !!";
-
+	return hassampos;
 }
+
+//PONER ALFOMBRAS
+// se manda estructura de pos de hassam
+//se pide que digite las coordenadas x y de la alfombra que quiere poner
+//digite donde quiere poner su alfombra (coord x ,coord y)
+
+//SE LLAMA A VERIFICAR
+
+
+//VERIFICAR SI SE PUEDE ALFOMBRAS
+// if((val_pos_alf1&&val_pos_alf2==a)||(val_pos_alf1&&val_pos_alf2==b)||(val_pos_alf1&&val_pos_alf2==1))||(val_pos_alf1&&val_pos_alf2==2)) VALIDAR CASOS CON ALFOMBRAS
+// bool=false;
+// intente de nuevo;
+// if((alfombra.alf1.posx>7||alfombra.alf1.posy<0)||(alfombra.alf2.posx>7||alfombra.alf2.posy<0))   VALIDAR QUE NO SE SALGAN DE LOS BORDES
+// if((posiciondehassam==(alfombra.alf2.posx&&alfombra.alf2.posy))||(posiciondehassam==(alfombra.alf1.posx&&alfombra.alf1.posy))) NO SE PUEDE PONER PORQUE AHI ESTA HASSAM PARA DANIEL: MEJORAR DONDE SE GUARDA POSICION DE HASSAM
+// if((alfombra.alf1.posx&&alfombra.alf1.posy)==(alfombra.alf2.posx&&alfombra.alf2.posy)) NO SE PUEDE PONER LAS DOS CASILLAS DE ALFOMBRA EN EL MISMO LUGAR
+
