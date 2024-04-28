@@ -26,7 +26,7 @@ struct caracteristicas
 	posicion pos;
 	char hassam;
 };
-caracteristicas movimiento(char tablero[][7],caracteristicas hassam);
+caracteristicas movimiento(char tablero[][7],caracteristicas hassam,posicion adyacentes[]);
 caracteristicas mediavuelta(caracteristicas hassam,int i, int casillas);
 
 
@@ -49,6 +49,7 @@ int main()
     int i,j;
     caracteristicas hassam;
     bool turno=true;
+    posicion adyacentes[4];
     
     
     
@@ -62,7 +63,6 @@ int main()
 	cin>>player2.nombre;
 	cout<<"SE LE OTORGA 10 ALFOMBRAS Y 10 MONEDAS A CADA JUGADOR!!"<<endl<<endl<<endl<<"HASSAM ESTA REPRESENTADO POR: "<<endl<<"Hassam hacia arriba: "<<char(193)<<endl<<"Hassam hacia la derecha: "<<char(195)<<endl<<"Hassam hacia abajo: "<<char(194)<<endl<<"Hassam hacia la izquierda: "<<char(180)<<endl<<endl<<endl<<"QUE EMPIECE EL JUEGO!!!"<<endl<<endl;
 	
-	
 	for(i=0;i<7;i++)											//llena la matriz de alfombras y coloca a hassam en el medio
 	{
 		for(j=0;j<7;j++)
@@ -73,28 +73,89 @@ int main()
 				tablero[i][j]=char(194);
 				hassam.pos.posx=j;
 				hassam.pos.posy=i;
+				hassam.hassam=char(194);
 			}
 		}
 	}
 	while(ganador==false)										//mientras no encuentre ganador, se ejecutará todo el juego
 	{
-		for(i=0;i<7;i++)										//imprime el tablero
+		cout<<char(201)<<char(187)<<"   ";
+		for(i=0;i<3;i++)
 		{
+			cout<<char(201)<<char(205)<<char(205)<<char(205)<<char(187)<<"   ";
+		}
+		cout<<endl;
+		for(i=0;i<7;i++)																    	//imprime el tablero
+		{
+			if(i%2==0)
+			{
+				cout<<char(200);
+			}
+			else
+			{
+				cout<<char(201);
+			}
 			for(j=0;j<7;j++)
 			{
-				cout<<tablero[i][j]<<"   ";
+				if(j<6)
+				{
+					cout<<tablero[i][j]<<"   ";
+				}
+				else
+				{
+					cout<<tablero[i][j];
+				}
 			}
-			cout<<endl<<endl;
+			if(i%2==0)
+			{
+				cout<<char(187);
+			}
+			else
+			{
+				cout<<char(188);
+			}
+			cout<<endl;
+			if(i<6)
+			{
+				if(i%2!=0)
+				{
+					cout<<char(186);
+					cout<<"                         ";
+				}
+				else
+				{
+					cout<<"                          ";
+					cout<<char(186);
+				}
+			}
+			if(i!=6)
+			{
+				cout<<endl;	
+			}
 		}
+		cout<<" ";
+		for(i=0;i<3;i++)
+		{
+			if(i!=2)
+			{
+				cout<<char(200)<<char(205)<<char(205)<<char(205)<<char(188)<<"   ";
+			}
+			else
+			{
+				cout<<char(200)<<char(205)<<char(205)<<char(205)<<char(188);	
+			}
+		}
+		cout<<"   "<<char(200)<<char(188);
+		cout<<endl;     																		//termina de imprimir el tablero
 		if(turno==true)
 		{
 			cout<<endl<<"Turno de "<<player1.nombre<<" !";
-			hassam=movimiento(tablero,hassam);
+			hassam=movimiento(tablero,hassam,adyacentes);
 		}
 		else
 		{
 			cout<<endl<<"Turno de "<<player2.nombre<<" !";
-			hassam=movimiento(tablero,hassam);
+			hassam=movimiento(tablero,hassam,adyacentes);
 		}
 	}
 
@@ -109,26 +170,111 @@ int main()
 caracteristicas mediavuelta(caracteristicas hassam,int i, int casillas)
 {
 	bool vueltarealizada=false;
-	if(hassam.pos.posx<0)
+	if(hassam.pos.posx==-1)
 	{
-	 	cout<<"Hassam se sale por la izquierda del tablero!!"<<endl<<"Se ha hecho un giro!!";
+	 	cout<<"Hassam se sale por la izquierda del tablero!!"<<endl<<"Se ha hecho un giro!!"<<endl;										//verificacion de cada una de las posibles salidas del tablero
 	 	if(hassam.pos.posy==0)
 	 	{
-	 //		caracteristicas
+	 		hassam.pos.posx=0;
+	 		hassam.hassam=char(194);
+	 		hassam.pos.posy+=casillas-i;
+	 		hassam.pos.posx+=casillas-i;
+	 		vueltarealizada=true;
+		}
+		if(vueltarealizada==false)
+		{
+			hassam.hassam=char(195);
+			if(hassam.pos.posy%2==0)
+			{
+				hassam.pos.posy--;
+				hassam.pos.posx+=(casillas-i)*2+1;
+			}
+			else
+			{
+				hassam.pos.posy++;
+				hassam.pos.posx+=(casillas-i)*2+1;
+			}
 		}
 	}	
-	else if(hassam.pos.posx>7)
+	else if(hassam.pos.posx==7)
 		 {
-			
-		 }
-		 else if(hassam.pos.posy<0)
+		 	cout<<"Hassam se sale por la derecha del tablero!!"<<endl<<"Se ha hecho un giro!!"<<endl;
+			if(hassam.pos.posy==6)
+     		{
+	 			hassam.pos.posx=6;
+	 			hassam.hassam=char(193);
+	 			hassam.pos.posy-=casillas-i;
+	 			hassam.pos.posx-=casillas-i;
+	 			vueltarealizada=true;
+		  	}
+	     	if(vueltarealizada==false)
+	     	{
+				hassam.hassam=char(180);
+				if(hassam.pos.posy%2==0)
+				{
+					hassam.pos.posy++;
+					hassam.pos.posx-=(casillas-i)*2+1;
+				}
+				else
+				{
+					hassam.pos.posy--;
+					hassam.pos.posx-=(casillas-i)*2+1;
+				}
+			}
+		}
+		else if(hassam.pos.posy==-1)
      	 	  {
-				
+				 	cout<<"Hassam se sale por arriba del tablero!!"<<endl<<"Se ha hecho un giro!!"<<endl;										//verificacion de cada una de las posibles salidas del tablero
+	 				if(hassam.pos.posx==0)
+	 				{
+	 					hassam.pos.posy=0;
+	 					hassam.hassam=char(195);
+	 					hassam.pos.posx+=casillas-i;
+	 					hassam.pos.posy+=casillas-i;
+	 					vueltarealizada=true;
+					}
+					if(vueltarealizada==false)
+					{
+						hassam.hassam=char(194);
+						if(hassam.pos.posx%2==0)
+						{
+							hassam.pos.posx--;
+							hassam.pos.posy+=(casillas-i)*2+1;
+						}
+						else
+						{
+							hassam.pos.posx++;
+							hassam.pos.posy+=(casillas-i)*2+1;
+						}
+					}
 			  }
-			  else if(hassam.pos.posy>7)
+			  else if(hassam.pos.posy==7)
      			   {
+     			   		cout<<"Hassam se sale por abajo del tablero!!"<<endl<<"Se ha hecho un giro!!"<<endl;										//verificacion de cada una de las posibles salidas del tablero
+	 					if(hassam.pos.posx==6)
+	 					{
+	 						hassam.pos.posy=6;
+	 						hassam.hassam=char(195);
+	 						hassam.pos.posx-=casillas-i;
+	 						hassam.pos.posy-=casillas-i;
+	 						vueltarealizada=true;
+						}
+						if(vueltarealizada==false)
+						{
+							hassam.hassam=char(193);
+							if(hassam.pos.posx%2==0)
+							{
+								hassam.pos.posx++;
+								hassam.pos.posy-=(casillas-i)*2+1;
+							}
+							else
+							{
+								hassam.pos.posx--;
+								hassam.pos.posy-=(casillas-i)*2+1;
+							}
+						}	
      			   	
-		  		   }
+		  			}
 	return hassam;
 }
 
@@ -136,42 +282,76 @@ caracteristicas mediavuelta(caracteristicas hassam,int i, int casillas)
 
 
 
-caracteristicas movimiento(char tablero[][7],caracteristicas hassam)
+caracteristicas movimiento(char tablero[][7],caracteristicas hassam,posicion adyacentes[])
 {
+	HANDLE hConsole = GetStdHandle( STD_OUTPUT_HANDLE );		//linea para poner color
+//	system("color e0");											//linea cambio de color a fondo amarillo
+	color(hConsole, 224);										//linea cambio de color a letra negra y fondo amarillo
 	int casillas,op=0,direccion;
 	int i;
 	bool cumple=false;
 	srand(time(0));
 	cout<<endl<<"Hacia que lado quiere girar a hassam"<<endl<<"Digite 1 si quiere hacia arriba"<<endl<<"Digite 2 si quiere hacia abajo"<<endl<<"Digite 3 si quiere hacia la derecha"<<endl<<"Digite 4 si quiere a la izquierda"<<endl;
 	do
-	{
-		cin>>direccion;
-		switch(direccion)
+	{	color(hConsole, 228);
+		cin>>direccion;																																//se pide la direccion en la que se va a mover a hassam
+		//color(hConsole, 224);																															
+		switch(direccion)																															//se prohibe que gire 180 grados
 		{
-			case 1: tablero[hassam.pos.posy][hassam.pos.posx]=char(0xDB);
-					hassam.hassam=char(193);
-					cumple=true;
+			case 1: if(hassam.hassam!=char(194))
+					{
+						tablero[hassam.pos.posy][hassam.pos.posx]=char(0xDB);
+						hassam.hassam=char(193);
+						cumple=true;
+					}
+					else
+					{
+						cout<<"Hassam esta mirando en la direccion contraria y no puede voltear 180 grados, intente de nuevo!"<<endl;
+					}
 						break;
-			case 2:	tablero[hassam.pos.posy][hassam.pos.posx]=char(0xDB);
-					hassam.hassam=char(194);
-					cumple=true;
+			case 2:	if(hassam.hassam!=char(193))
+					{
+						tablero[hassam.pos.posy][hassam.pos.posx]=char(0xDB);
+						hassam.hassam=char(194);
+						cumple=true;
+					}
+					else
+					{
+						cout<<"Hassam esta mirando en la direccion contraria y no puede voltear 180 grados, intente de nuevo!"<<endl;
+					}
 						break;
-			case 3:	tablero[hassam.pos.posy][hassam.pos.posx]=char(0xDB);
-					hassam.hassam=char(195);
-					cumple=true;
+			case 3:	if(hassam.hassam!=char(180))
+					{
+						tablero[hassam.pos.posy][hassam.pos.posx]=char(0xDB);
+						hassam.hassam=char(195);
+						cumple=true;
+					}
+					else
+					{
+						cout<<"Hassam esta mirando en la direccion contraria y no puede voltear 180 grados, intente de nuevo!"<<endl;
+					}
 						break;
-			case 4:	tablero[hassam.pos.posy][hassam.pos.posx]=char(0xDB);
-					hassam.hassam=char(180);
-					cumple=true;
+			case 4:	if(hassam.hassam!=char(195))
+					{
+						tablero[hassam.pos.posy][hassam.pos.posx]=char(0xDB);
+						hassam.hassam=char(180);
+						cumple=true;
+					}
+					else
+					{
+						cout<<"Hassam esta mirando en la direccion contraria y no puede voltear 180 grados, intente de nuevo!"<<endl;
+					}
 						break;	
 			default: cout<<"opcion inexistente"<<endl;
 						break;
 		}	
 	}while(cumple==false);
-	cout<<endl<<"Digite 1 para tirar el dado!! "<<endl<<"Recuerde que el minimo numero es 1 y el maximo es 4"<<endl;
+	cout<<endl<<"Digite 1 para tirar el dado!! "<<endl<<"Recuerde que el minimo numero es 1 y el maximo es 4"<<endl;						//lanzamiento del dado, numero maximo=4, numero minimo=1
 	do
 	{
+		color(hConsole, 228);
 		cin>>op;
+		color(hConsole, 224);
 		switch(op)
 		{
 			case 1: casillas=(1+rand()%4);
@@ -180,10 +360,10 @@ caracteristicas movimiento(char tablero[][7],caracteristicas hassam)
 					break;
 		}
 	}while(op!=1);
-	cout<<endl<<"El dado marca el numero "<<casillas<<" !!"<<endl;
-	if(direccion==1)
-	{
-		for(i=0;i<casillas;i++)
+	cout<<endl<<"El dado marca el numero "<<casillas<<" !!"<<endl;															
+	if(direccion==1)																												//De acuerdo a la direccion, hassam se mueve las casillas marcadas por el dado
+	{																																//Por cada paso que da hassam, se verifica si se ha salido del tablero
+		for(i=1;i<=casillas;i++)																									//En caso de salida del tablero, hassam dará la vuelta correspondiente
 		{
 			hassam.pos.posy--;
 			hassam=mediavuelta(hassam,i,casillas);	
@@ -191,7 +371,7 @@ caracteristicas movimiento(char tablero[][7],caracteristicas hassam)
 	}
 	else if(direccion==2)
 		 {
-			for(i=0;i<casillas;i++)
+			for(i=1;i<=casillas;i++)
 			{
 				hassam.pos.posy++;
 				hassam=mediavuelta(hassam,i,casillas);	
@@ -199,7 +379,7 @@ caracteristicas movimiento(char tablero[][7],caracteristicas hassam)
 		 }
 		 else if(direccion==3)
 		 	  {
-				for(i=0;i<casillas;i++)
+				for(i=1;i<=casillas;i++)
 				{
 					hassam.pos.posx++;	
 					hassam=mediavuelta(hassam,i,casillas);
@@ -207,13 +387,21 @@ caracteristicas movimiento(char tablero[][7],caracteristicas hassam)
 			  }
 			  else
 			  {
-				for(i=0;i<casillas;i++)
+				for(i=1;i<=casillas;i++)
 				{
 					hassam.pos.posx--;	
 					hassam=mediavuelta(hassam,i,casillas);
 				}
 			  }
 	tablero[hassam.pos.posy][hassam.pos.posx]=hassam.hassam;
+	adyacentes[0].posy=hassam.pos.posy+1;
+	adyacentes[0].posx=hassam.pos.posx;
+	adyacentes[1].posx=hassam.pos.posx+1;
+	adyacentes[1].posy=hassam.pos.posy;
+	adyacentes[2].posy=hassam.pos.posy-1;
+	adyacentes[2].posx=hassam.pos.posx;
+	adyacentes[3].posx=hassam.pos.posx-1;
+	adyacentes[3].posy=hassam.pos.posy;
 	return hassam;
 }
 
