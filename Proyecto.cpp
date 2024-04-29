@@ -28,6 +28,8 @@ struct caracteristicas
 };
 caracteristicas movimiento(char tablero[][7],caracteristicas hassam,posicion adyacentes[]);
 caracteristicas mediavuelta(caracteristicas hassam,int i, int casillas);
+void UsoAlfombras(char tablero[][7],caracteristicas hassam,posicion adyacentes[]);
+bool BuscarAlfombras(posicion adyacentes[],alfombra pos_alfombra);
 
 
 
@@ -151,11 +153,13 @@ int main()
 		{
 			cout<<endl<<"Turno de "<<player1.nombre<<" !";
 			hassam=movimiento(tablero,hassam,adyacentes);
+            turno=false;
 		}
 		else
 		{
 			cout<<endl<<"Turno de "<<player2.nombre<<" !";
 			hassam=movimiento(tablero,hassam,adyacentes);
+            turno=true;
 		}
 	}
 
@@ -402,8 +406,63 @@ caracteristicas movimiento(char tablero[][7],caracteristicas hassam,posicion ady
 	adyacentes[2].posx=hassam.pos.posx;
 	adyacentes[3].posx=hassam.pos.posx-1;
 	adyacentes[3].posy=hassam.pos.posy;
+
+
 	return hassam;
 }
+
+void UsoAlfombras(char tablero[][7],caracteristicas hassam,posicion adyacentes[])
+{
+    alfombra pos_alfombra;
+    int i,j;
+    int TableroValores[7][7]{0};
+    bool EsAdyacente,SePuede;
+
+    cout<<"Digite donde quiere poner la primera mitad de su alfombra (coordenada x y coordenada y)"<<endl<<"Tenga en cuenta que esta debe ser adyacente a hassam";
+    do
+    {
+        cin>>pos_alfombra.alf1.posx;
+        cin>>pos_alfombra.alf1.posy;
+        EsAdyacente=BuscarAlfombras(adyacentes,pos_alfombra);
+        if(EsAdyacente==false)
+        {
+            cout<<"Lo siento, no puede poner alfombras aqui, intente de nuevo."<<endl;
+        }
+    }while(EsAdyacente==false);
+
+    cout<<"Digite donde quiere poner la segunda mitad de su alfombra (coordenada x y coordenada y)"<<endl;
+
+    cin>>pos_alfombra.alf2.posx;
+    cin>>pos_alfombra.alf2.posy;
+
+    TableroValores[pos_alfombra.alf1.posx][pos_alfombra.alf1.posy]=1;
+    TableroValores[pos_alfombra.alf2.posx][pos_alfombra.alf2.posy]=1;
+    //VerificacionAlfombras(adyacentes,hassam,pos_alfombra)
+
+
+
+
+
+}
+
+bool BuscarAlfombras(posicion adyacentes[],alfombra pos_alfombra)
+{
+    int i;
+
+    for(i=0;i<4;i++)
+    {
+        if((adyacentes[i].posy==pos_alfombra.alf1.posy)&&(adyacentes[i].posx==pos_alfombra.alf1.posx))
+            return true;
+    }
+    return false;
+
+}
+/*VerificacionAlfombras(posicion adyacentes[],caracteristicas hassam,alfombra pos_alfombra, alfombra TableroValores[][7])
+{
+
+}*/
+
+
 
 
 
