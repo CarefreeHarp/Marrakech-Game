@@ -30,6 +30,7 @@ caracteristicas movimiento(char tablero[][7],caracteristicas hassam,posicion ady
 caracteristicas mediavuelta(caracteristicas hassam,int i, int casillas);
 void UsoAlfombras(char tablero[][7],caracteristicas hassam,posicion adyacentes[]);
 bool BuscarAlfombras(posicion adyacentes[],alfombra pos_alfombra);
+void imprimirtablero(char tablero[][7]);
 
 
 
@@ -81,13 +82,38 @@ int main()
 	}
 	while(ganador==false)										//mientras no encuentre ganador, se ejecutará todo el juego
 	{
+		imprimirtablero(tablero);
+		if(turno==true)
+		{
+			cout<<endl<<"Turno de "<<player1.nombre<<" !";
+			hassam=movimiento(tablero,hassam,adyacentes);
+            turno=false;
+		}
+		else
+		{
+			cout<<endl<<"Turno de "<<player2.nombre<<" !";
+			hassam=movimiento(tablero,hassam,adyacentes);
+            turno=true;
+		}
+	}
+
+//	color(hConsole, 224);
+	return 0;
+}
+
+
+
+
+void imprimirtablero(char tablero[][7])																//imprime el tablero
+{
+	int i,j;
 		cout<<char(201)<<char(187)<<"   ";
 		for(i=0;i<3;i++)
 		{
 			cout<<char(201)<<char(205)<<char(205)<<char(205)<<char(187)<<"   ";
 		}
 		cout<<endl;
-		for(i=0;i<7;i++)																    	//imprime el tablero
+		for(i=0;i<7;i++)																    	
 		{
 			if(i%2==0)
 			{
@@ -148,23 +174,7 @@ int main()
 			}
 		}
 		cout<<"   "<<char(200)<<char(188);
-		cout<<endl;     																		//termina de imprimir el tablero
-		if(turno==true)
-		{
-			cout<<endl<<"Turno de "<<player1.nombre<<" !";
-			hassam=movimiento(tablero,hassam,adyacentes);
-            turno=false;
-		}
-		else
-		{
-			cout<<endl<<"Turno de "<<player2.nombre<<" !";
-			hassam=movimiento(tablero,hassam,adyacentes);
-            turno=true;
-		}
-	}
-
-//	color(hConsole, 224);
-	return 0;
+		cout<<endl;     																		//termina de imprimir el tablero	
 }
 
 
