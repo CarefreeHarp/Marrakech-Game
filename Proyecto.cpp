@@ -28,9 +28,10 @@ struct caracteristicas
 };
 caracteristicas movimiento(char tablero[][7],caracteristicas hassam,posicion adyacentes[]);
 caracteristicas mediavuelta(caracteristicas hassam,int i, int casillas);
-void UsoAlfombras(char tablero[][7],caracteristicas hassam,posicion adyacentes[]);
+void UsoAlfombras(char tablero[][7],caracteristicas hassam,posicion adyacentes[], int colorCode);
 bool BuscarAlfombras(posicion adyacentes[],alfombra pos_alfombra);
 void imprimirtablero(char tablero[][7]);
+void setColorAtPosition(int x, int y, int colorCode);
 
 
 
@@ -87,12 +88,16 @@ int main()
 		{
 			cout<<endl<<"Turno de "<<player1.nombre<<" !";
 			hassam=movimiento(tablero,hassam,adyacentes);
+            imprimirtablero(tablero);
+            UsoAlfombras(tablero,hassam,adyacentes,'R');
             turno=false;
 		}
 		else
 		{
 			cout<<endl<<"Turno de "<<player2.nombre<<" !";
 			hassam=movimiento(tablero,hassam,adyacentes);
+            imprimirtablero(tablero);
+            UsoAlfombras(tablero,hassam,adyacentes,'A');
             turno=true;
 		}
 	}
@@ -174,7 +179,7 @@ void imprimirtablero(char tablero[][7])																//imprime el tablero
 			}
 		}
 		cout<<"   "<<char(200)<<char(188);
-		cout<<endl;     																		//termina de imprimir el tablero	
+		cout<<endl;     																		//termina de imprimir el tablero
 }
 
 
@@ -421,6 +426,62 @@ caracteristicas movimiento(char tablero[][7],caracteristicas hassam,posicion ady
 	return hassam;
 }
 
+
+void setColorAtPosition(int x, int y, int colorCode) { //CHATGPT ME AYUDÓ CON ESTO PORQUE NO LO ENTENDI//
+    cout << "\033[" << x + 1 << ";" << y * 2 + 1 << "H\033[" << colorCode << "m";
+    cout << "█";
+    cout << "\033[0m";
+}
+
+void UsoAlfombras(char tablero[][7], caracteristicas hassam, posicion adyacentes[], int colorCode) {
+    bool posicionValida = false;
+    int eleccion;
+
+    cout << "Seleccione la posición inicial para la alfombra adyacente a Hassam (no puede cubrir a Hassam):" << endl;
+    int esvalido = 0;
+    int NumValido[4]; // Almacena índices de las opciones válidas
+
+    // Verificar posiciones adyacentes precalculadas
+    for (int i = 0; i < 4; i++) {
+        int ady_x = adyacentes[i].posx;
+        int ady_y = adyacentes[i].posy;
+        if (ady_x >= 0 && ady_x < 7 && ady_y >= 0 && ady_y < 7 && tablero[ady_x][ady_y] != char(219)) {
+            cout << ++esvalido << ". (" << ady_x << ", " << ady_y << ") - opción válida" << endl;
+            NumValido[esvalido - 1] = i; // Guardar el índice de la opción válida
+        }
+    }
+
+    if (esvalido == 0) {
+        cout << "No hay posiciones válidas disponibles." << endl;
+        return;
+    }
+
+    cout << "Elija el número de la posición (1-" << esvalido << "): ";
+    cin >> eleccion;
+
+    if (eleccion < 1 || eleccion > esvalido) {
+        cout << "Número de opción inválido, por favor intente de nuevo." << endl;
+        return;
+    }
+
+    int idx = NumValido[eleccion - 1];
+    int ady_x = adyacentes[idx].posx;
+    int ady_y = adyacentes[idx].posy;
+    if (ady_x >= 0 && ady_x < 7 && ady_y >= 0 && ady_y < 7) {
+        tablero[ady_x][ady_y] = char(219);  // Colocar la primera mitad de la alfombra
+        setColorAtPosition(ady_x, ady_y, colorCode);  // Cambiar color en la posición de la alfombra
+        cout << "Alfombra colocada correctamente en (" << ady_x << ", " << ady_y << ")" << endl;
+        posicionValida = true;
+    } else {
+        cout << "Opción inválida, por favor intente de nuevo." << endl;
+    }
+}
+
+
+
+
+
+/*
 void UsoAlfombras(char tablero[][7],caracteristicas hassam,posicion adyacentes[])
 {
     alfombra pos_alfombra;
@@ -465,8 +526,8 @@ bool BuscarAlfombras(posicion adyacentes[],alfombra pos_alfombra)
             return true;
     }
     return false;
+*/
 
-}
 /*VerificacionAlfombras(posicion adyacentes[],caracteristicas hassam,alfombra pos_alfombra, alfombra TableroValores[][7])
 {
 
