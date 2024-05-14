@@ -86,7 +86,7 @@ int main()
 				cout<<tablero[i][j]<<"\t";
 			}
 			cout<<endl;
-		} */	
+		} */
 		if(turno==true)
 		{
 			color(hConsole, 228); 
@@ -107,7 +107,7 @@ int main()
 					cout<<tablero[i][j]<<"\t";
 				}
 				cout<<endl;
-			} */	
+			} */
             NumdeAlfombra1=UsoAlfombras(tablero,adyacentes,turno,NumdeAlfombra1);
             player1.alfombras--;
             turno=false;
@@ -124,7 +124,7 @@ int main()
 			
 			hassam=movimiento(tablero,hassam,adyacentes);
 						
-            imprimirtablero(tablero,hassam);
+           imprimirtablero(tablero,hassam);
 /*			for(i=0;i<7;i++)																												//ACTIVAR PARA IMPRIMIR LA MATRIZ NUMÉRICA
 			{
 				for(j=0;j<7;j++)
@@ -132,7 +132,7 @@ int main()
 					cout<<tablero[i][j]<<"\t";
 				}
 				cout<<endl;
-			} */	
+			} */
             NumdeAlfombra2=UsoAlfombras(tablero,adyacentes,turno,NumdeAlfombra2);
             player2.alfombras--;
             turno=true;
