@@ -1,14 +1,13 @@
 #include <iostream>
-#include <windows.h>											//linea para poner color
+#include <windows.h>																													//linea para poner color
 #include <mmsystem.h>											
 #include <ctime>
 #include <cstdlib>
-//#include <cstdlib>
-#define color SetConsoleTextAttribute							//linea para poner color
+#define color SetConsoleTextAttribute																									//linea para poner color
 using namespace std;
-struct player													//declaracion de player como estructura
+struct player																															//declaracion de player como estructura
 {
-	string nombre;
+	char nombre[30];
 	int alfombras;
 	int dirhams;
 };
@@ -17,21 +16,15 @@ struct posicion
 	int posx;
 	int posy;
 };
-struct alfombra
-{
-	posicion alf1;
-	posicion alf2;
-};
 struct caracteristicas
 {
 	posicion pos;
 	char hassam;
 };
-caracteristicas movimiento(char tablero[][7],caracteristicas hassam,posicion adyacentes[]);
+caracteristicas movimiento(int tablero[][7],caracteristicas hassam,posicion adyacentes[]);
 caracteristicas mediavuelta(caracteristicas hassam,int i, int casillas);
-char UsoAlfombras(char tablero[][7],caracteristicas hassam,posicion adyacentes[], bool turno, int NumdeAlfombra);
-bool BuscarAlfombras(posicion adyacentes[],alfombra pos_alfombra);
-void imprimirtablero(char tablero[][7]);
+char UsoAlfombras(int tablero[][7],posicion adyacentes[], bool turno, int NumdeAlfombra);
+void imprimirtablero(int tablero[][7],caracteristicas hassam);
 
 
 
@@ -44,74 +37,114 @@ void imprimirtablero(char tablero[][7]);
 
 int main() 
 {
-    HANDLE hConsole = GetStdHandle( STD_OUTPUT_HANDLE );		//linea para poner color
-    system("color e0");											//linea cambio de color a fondo amarillo
-	color(hConsole, 224);										//linea cambio de color a letra negra y fondo amarillo
-    player player1,player2;										//declaracion de variables
+    HANDLE hConsole = GetStdHandle( STD_OUTPUT_HANDLE );																				//linea para poner color
+    system("color e0");																													//linea cambio de color a fondo amarillo
+	color(hConsole, 224);																												//linea cambio de color a letra negra y fondo amarillo
+    player player1,player2;																												//declaracion de variables
     bool ganador=false;
-    char tablero[7][7];
-    int i,j;
-    int NumdeAlfombra1=0,NumdeAlfombra2=1;
+    int tablero[7][7];
+    int i,j,turnos=1;
+    int NumdeAlfombra1=3,NumdeAlfombra2=2;
     caracteristicas hassam;
     bool turno=true;
     posicion adyacentes[4];
     
     
-    
-    player1.alfombras=10;										//establecer valores iniciales
+    player1.alfombras=10;																												//establecer valores iniciales
     player2.alfombras=10;
     player1.dirhams=20;
     player2.dirhams=20;
 	cout<<"Digite el nombre del primer jugador!"<<endl;
-	cin>>player1.nombre;
+	cin.getline(player1.nombre,30,'\n');
 	cout<<"Digite el nombre del segundo jugador!"<<endl;
-	cin>>player2.nombre;
-	cout<<"SE LE OTORGA 10 ALFOMBRAS Y 10 MONEDAS A CADA JUGADOR!!"<<endl<<endl<<endl<<"HASSAM ESTA REPRESENTADO POR: "<<endl<<"Hassam hacia arriba: "<<char(193)<<endl<<"Hassam hacia la derecha: "<<char(195)<<endl<<"Hassam hacia abajo: "<<char(194)<<endl<<"Hassam hacia la izquierda: "<<char(180)<<endl<<endl<<endl<<"QUE EMPIECE EL JUEGO!!!"<<endl<<endl;
+	cin.getline(player2.nombre,30,'\n');
 	
-	for(i=0;i<7;i++)											//llena la matriz de alfombras y coloca a hassam en el medio
+	for(i=0;i<7;i++)																													//llena la matriz de alfombras y coloca a hassam en el medio
 	{
 		for(j=0;j<7;j++)
 		{
-			tablero[i][j]=char(0xDB);
+			tablero[i][j]=0;
 			if((i==3)&&(j==3))
 			{
-				tablero[i][j]=char(194);
+				tablero[i][j]=-1;
 				hassam.pos.posx=j;
 				hassam.pos.posy=i;
-				hassam.hassam=char(194);
+				hassam.hassam='v';
 			}
 		}
 	}
-	while(ganador==false)										//mientras no encuentre ganador, se ejecutará todo el juego
+	color(hConsole,228);
+	cout<<endl<<" QUE EMPIECE EL JUEGO!!!"<<endl<<"SE LE OTORGA: "<<endl<<"1) 20 DIRHAMS A CADA UNO"<<endl<<"2) 10 ALFOMBRAS ROJAS A "<<player1.nombre<<" Y 10 ALFOMBRAS AZULES A "<<player2.nombre<<endl;
+	color(hConsole,224);
+	while(ganador==false)																												//mientras no encuentre ganador, se ejecutará todo el juego
 	{
-		imprimirtablero(tablero);
+		imprimirtablero(tablero,hassam);
+/*		for(i=0;i<7;i++)																												//ACTIVAR PARA IMPRIMIR LA MATRIZ NUMÉRICA
+		{
+			for(j=0;j<7;j++)
+			{
+				cout<<tablero[i][j]<<"\t";
+			}
+			cout<<endl;
+		} */	
 		if(turno==true)
 		{
-			cout<<endl<<"Turno de "<<player1.nombre<<" !";
+			color(hConsole, 228); 
+			cout<<endl<<endl<<"\t\t\t\t\t\t\tTURNO #"<<turnos<<endl;
+			turnos++;
+			color(hConsole, 224);
+			cout<<"A "<<player1.nombre<<" LE QUEDAN "<<player1.alfombras<<" ALFOMBRAS"<<endl;
+			cout<<"A "<<player2.nombre<<" LE QUEDAN "<<player2.alfombras<<" ALFOMBRAS"<<endl;
+			cout<<endl<<endl<<"Turno de "<<player1.nombre<<" !";
+			
 			hassam=movimiento(tablero,hassam,adyacentes);
-            imprimirtablero(tablero);
-            NumdeAlfombra1=UsoAlfombras(tablero,hassam,adyacentes,turno,NumdeAlfombra1);
+			
+            imprimirtablero(tablero,hassam);
+/*			for(i=0;i<7;i++)																												//ACTIVAR PARA IMPRIMIR LA MATRIZ NUMÉRICA
+			{
+				for(j=0;j<7;j++)
+				{
+					cout<<tablero[i][j]<<"\t";
+				}
+				cout<<endl;
+			} */	
+            NumdeAlfombra1=UsoAlfombras(tablero,adyacentes,turno,NumdeAlfombra1);
+            player1.alfombras--;
             turno=false;
 		}
 		else
 		{
+			color(hConsole, 228); 
+			cout<<endl<<endl<<"\t\t\t\t\t\t\tTURNO #"<<turnos<<endl;
+			turnos++;
+			color(hConsole, 224);
+			cout<<"A "<<player1.nombre<<" LE QUEDAN "<<player1.alfombras<<" ALFOMBRAS"<<endl;
+			cout<<"A "<<player2.nombre<<" LE QUEDAN "<<player2.alfombras<<" ALFOMBRAS"<<endl;
 			cout<<endl<<"Turno de "<<player2.nombre<<" !";
+			
 			hassam=movimiento(tablero,hassam,adyacentes);
-            imprimirtablero(tablero);
-            NumdeAlfombra2=UsoAlfombras(tablero,hassam,adyacentes,turno,NumdeAlfombra2);
+						
+            imprimirtablero(tablero,hassam);
+/*			for(i=0;i<7;i++)																												//ACTIVAR PARA IMPRIMIR LA MATRIZ NUMÉRICA
+			{
+				for(j=0;j<7;j++)
+				{
+					cout<<tablero[i][j]<<"\t";
+				}
+				cout<<endl;
+			} */	
+            NumdeAlfombra2=UsoAlfombras(tablero,adyacentes,turno,NumdeAlfombra2);
+            player2.alfombras--;
             turno=true;
 		}
 	}
-
-//	color(hConsole, 224);
 	return 0;
 }
 
 
-
-
-void imprimirtablero(char tablero[][7])																//imprime el tablero
+void imprimirtablero(int tablero[][7],caracteristicas hassam)																			//imprime el tablero
 {
+	HANDLE hConsole = GetStdHandle( STD_OUTPUT_HANDLE );																				//linea para poner color
 	int i,j;
 		cout<<"                    X"<<endl<<endl<<"        0   1   2   3   4   5   6"<<endl;
 		cout<<"       "<<char(201)<<char(187)<<"   ";
@@ -142,11 +175,77 @@ void imprimirtablero(char tablero[][7])																//imprime el tablero
 			{
 				if(j<6)
 				{
-					cout<<tablero[i][j]<<"   ";
+					if(tablero[i][j]==0)
+					{
+						cout<<char(0xDB)<<"   ";
+					}
+					else if(tablero[i][j]==-1)
+					{
+						cout<<hassam.hassam<<"   ";
+					}
+					else if(tablero[i][j]%2==0)
+					{
+						color(hConsole, 233);
+						if(tablero[i][j]<0)
+						{
+							cout<<hassam.hassam<<"   ";
+						}
+						else
+						{
+							cout<<char(0xDB)<<"   ";
+						}
+						color(hConsole, 224);
+					}
+					else
+					{
+						color(hConsole, 228);
+						if(tablero[i][j]<0)
+						{
+							cout<<hassam.hassam<<"   ";
+						}
+						else
+						{
+							cout<<char(0xDB)<<"   ";
+						}
+						color(hConsole, 224);
+					}
 				}
 				else
 				{
-					cout<<tablero[i][j];
+					if(tablero[i][j]==0)
+					{
+						cout<<char(0xDB);
+					}
+					else if(tablero[i][j]==-1)
+					{
+						cout<<hassam.hassam;
+					}
+					else if(tablero[i][j]%2==0)
+					{
+						color(hConsole, 233);
+						if(tablero[i][j]<0)
+						{
+							cout<<hassam.hassam;
+						}
+						else
+						{
+							cout<<char(0xDB);
+						}
+						color(hConsole, 224);
+					}
+					else
+					{
+						color(hConsole, 228);
+						if(tablero[i][j]<0)
+						{
+							cout<<hassam.hassam;
+						}
+						else
+						{
+							cout<<char(0xDB);
+						}
+						color(hConsole, 224);
+					}
 				}
 			}
 			if(i%2==0)
@@ -187,7 +286,7 @@ void imprimirtablero(char tablero[][7])																//imprime el tablero
 			}
 		}
 		cout<<"   "<<char(200)<<char(188);
-		cout<<endl;     																		//termina de imprimir el tablero
+		cout<<endl;     																												//termina de imprimir el tablero
 }
 
 
@@ -203,14 +302,14 @@ caracteristicas mediavuelta(caracteristicas hassam,int i, int casillas)
 	 	if(hassam.pos.posy==0)
 	 	{
 	 		hassam.pos.posx=0;
-	 		hassam.hassam=char(194);
+	 		hassam.hassam='v';
 	 		hassam.pos.posy+=casillas-i;
 	 		hassam.pos.posx+=casillas-i;
 	 		vueltarealizada=true;
 		}
 		if(vueltarealizada==false)
 		{
-			hassam.hassam=char(195);
+			hassam.hassam='>';
 			if(hassam.pos.posy%2==0)
 			{
 				hassam.pos.posy--;
@@ -229,14 +328,14 @@ caracteristicas mediavuelta(caracteristicas hassam,int i, int casillas)
 			if(hassam.pos.posy==6)
      		{
 	 			hassam.pos.posx=6;
-	 			hassam.hassam=char(193);
+	 			hassam.hassam='^';
 	 			hassam.pos.posy-=casillas-i;
 	 			hassam.pos.posx-=casillas-i;
 	 			vueltarealizada=true;
 		  	}
 	     	if(vueltarealizada==false)
 	     	{
-				hassam.hassam=char(180);
+				hassam.hassam='<';
 				if(hassam.pos.posy%2==0)
 				{
 					hassam.pos.posy++;
@@ -251,18 +350,18 @@ caracteristicas mediavuelta(caracteristicas hassam,int i, int casillas)
 		}
 		else if(hassam.pos.posy==-1)
      	 	  {
-				 	cout<<"Hassam se sale por arriba del tablero!!"<<endl<<"Se ha hecho un giro!!"<<endl;										//verificacion de cada una de las posibles salidas del tablero
+				 	cout<<"Hassam se sale por arriba del tablero!!"<<endl<<"Se ha hecho un giro!!"<<endl;								//verificacion de cada una de las posibles salidas del tablero
 	 				if(hassam.pos.posx==0)
 	 				{
 	 					hassam.pos.posy=0;
-	 					hassam.hassam=char(195);
+	 					hassam.hassam='>';
 	 					hassam.pos.posx+=casillas-i;
 	 					hassam.pos.posy+=casillas-i;
 	 					vueltarealizada=true;
 					}
 					if(vueltarealizada==false)
 					{
-						hassam.hassam=char(194);
+						hassam.hassam='v';
 						if(hassam.pos.posx%2==0)
 						{
 							hassam.pos.posx--;
@@ -277,18 +376,18 @@ caracteristicas mediavuelta(caracteristicas hassam,int i, int casillas)
 			  }
 			  else if(hassam.pos.posy==7)
      			   {
-     			   		cout<<"Hassam se sale por abajo del tablero!!"<<endl<<"Se ha hecho un giro!!"<<endl;										//verificacion de cada una de las posibles salidas del tablero
+     			   		cout<<"Hassam se sale por abajo del tablero!!"<<endl<<"Se ha hecho un giro!!"<<endl;							//verificacion de cada una de las posibles salidas del tablero
 	 					if(hassam.pos.posx==6)
 	 					{
 	 						hassam.pos.posy=6;
-	 						hassam.hassam=char(195);
+	 						hassam.hassam='>';
 	 						hassam.pos.posx-=casillas-i;
 	 						hassam.pos.posy-=casillas-i;
 	 						vueltarealizada=true;
 						}
 						if(vueltarealizada==false)
 						{
-							hassam.hassam=char(193);
+							hassam.hassam='^';
 							if(hassam.pos.posx%2==0)
 							{
 								hassam.pos.posx++;
@@ -309,26 +408,46 @@ caracteristicas mediavuelta(caracteristicas hassam,int i, int casillas)
 
 
 
-caracteristicas movimiento(char tablero[][7],caracteristicas hassam,posicion adyacentes[])
+caracteristicas movimiento(int tablero[][7],caracteristicas hassam,posicion adyacentes[])
 {
-	HANDLE hConsole = GetStdHandle( STD_OUTPUT_HANDLE );		//linea para poner color
-//	system("color e0");											//linea cambio de color a fondo amarillo
-	color(hConsole, 224);										//linea cambio de color a letra negra y fondo amarillo
+	HANDLE hConsole = GetStdHandle( STD_OUTPUT_HANDLE );	   																			//linea para poner color
 	int casillas,op=0,direccion;
-	int i;
+	int i,aux;
 	bool cumple=false;
 	srand(time(0));
-	cout<<endl<<"Hacia que lado quiere girar a hassam"<<endl<<"Digite 1 si quiere hacia arriba"<<endl<<"Digite 2 si quiere hacia abajo"<<endl<<"Digite 3 si quiere hacia la derecha"<<endl<<"Digite 4 si quiere a la izquierda"<<endl;
+	cout<<endl<<"Hacia que lado quiere girar a hassam"<<endl<<"Digite ";
+	color(hConsole, 228);
+	cout<<"1";
+	color(hConsole, 224); 
+	cout<<" si quiere hacia arriba, digite ";
+	color(hConsole, 228); 
+	cout<<"2";
+	color(hConsole, 224); 
+	cout<<" si quiere hacia abajo"<<endl<<"Digite ";
+	color(hConsole, 228); 
+	cout<<"3";
+	color(hConsole, 224); 
+	cout<<" si quiere hacia la derecha, digite ";
+	color(hConsole, 228);
+	cout<<"4";
+	color(hConsole, 224); 
+	cout<<" si quiere a la izquierda"<<endl;
 	do
 	{	color(hConsole, 228);
-		cin>>direccion;																																//se pide la direccion en la que se va a mover a hassam
-		//color(hConsole, 224);																													
-		switch(direccion)																															//se prohibe que gire 180 grados
+		cin>>direccion;																													//se pide la direccion en la que se va a mover a hassam																												
+		switch(direccion)																												//se prohibe que gire 180 grados
 		{
-			case 1: if(hassam.hassam!=char(194))
+			case 1: if(hassam.hassam!='v')
 					{
-						tablero[hassam.pos.posy][hassam.pos.posx]=char(0xDB);
-						hassam.hassam=char(193);
+						if((tablero[hassam.pos.posy][hassam.pos.posx]<0)&&(tablero[hassam.pos.posy][hassam.pos.posx]!=-1))
+						{
+							tablero[hassam.pos.posy][hassam.pos.posx]-=tablero[hassam.pos.posy][hassam.pos.posx]*2;
+						}
+						else if(tablero[hassam.pos.posy][hassam.pos.posx]==-1)
+						{
+							tablero[hassam.pos.posy][hassam.pos.posx]=0;
+						}
+						hassam.hassam='^';
 						cumple=true;
 					}
 					else
@@ -336,10 +455,17 @@ caracteristicas movimiento(char tablero[][7],caracteristicas hassam,posicion ady
 						cout<<"Hassam esta mirando en la direccion contraria y no puede voltear 180 grados, intente de nuevo!"<<endl;
 					}
 						break;
-			case 2:	if(hassam.hassam!=char(193))
+			case 2:	if(hassam.hassam!='^')
 					{
-						tablero[hassam.pos.posy][hassam.pos.posx]=char(0xDB);
-						hassam.hassam=char(194);
+						if((tablero[hassam.pos.posy][hassam.pos.posx]<0)&&(tablero[hassam.pos.posy][hassam.pos.posx]!=-1))
+						{
+							tablero[hassam.pos.posy][hassam.pos.posx]-=tablero[hassam.pos.posy][hassam.pos.posx]*2;
+						}
+						else if(tablero[hassam.pos.posy][hassam.pos.posx]==-1)
+						{
+							tablero[hassam.pos.posy][hassam.pos.posx]=0;
+						}
+						hassam.hassam='v';
 						cumple=true;
 					}
 					else
@@ -347,10 +473,17 @@ caracteristicas movimiento(char tablero[][7],caracteristicas hassam,posicion ady
 						cout<<"Hassam esta mirando en la direccion contraria y no puede voltear 180 grados, intente de nuevo!"<<endl;
 					}
 						break;
-			case 3:	if(hassam.hassam!=char(180))
+			case 3:	if(hassam.hassam!='<')
 					{
-						tablero[hassam.pos.posy][hassam.pos.posx]=char(0xDB);
-						hassam.hassam=char(195);
+						if((tablero[hassam.pos.posy][hassam.pos.posx]<0)&&(tablero[hassam.pos.posy][hassam.pos.posx]!=-1))
+						{
+							tablero[hassam.pos.posy][hassam.pos.posx]-=tablero[hassam.pos.posy][hassam.pos.posx]*2;
+						}
+						else if(tablero[hassam.pos.posy][hassam.pos.posx]==-1)
+						{
+							tablero[hassam.pos.posy][hassam.pos.posx]=0;
+						}
+						hassam.hassam='>';
 						cumple=true;
 					}
 					else
@@ -358,10 +491,17 @@ caracteristicas movimiento(char tablero[][7],caracteristicas hassam,posicion ady
 						cout<<"Hassam esta mirando en la direccion contraria y no puede voltear 180 grados, intente de nuevo!"<<endl;
 					}
 						break;
-			case 4:	if(hassam.hassam!=char(195))
+			case 4:	if(hassam.hassam!='>')
 					{
-						tablero[hassam.pos.posy][hassam.pos.posx]=char(0xDB);
-						hassam.hassam=char(180);
+						if((tablero[hassam.pos.posy][hassam.pos.posx]<0)&&(tablero[hassam.pos.posy][hassam.pos.posx]!=-1))
+						{
+							tablero[hassam.pos.posy][hassam.pos.posx]-=tablero[hassam.pos.posy][hassam.pos.posx]*2;
+						}
+						else if(tablero[hassam.pos.posy][hassam.pos.posx]==-1)
+						{
+							tablero[hassam.pos.posy][hassam.pos.posx]=0;
+						}
+						hassam.hassam='<';
 						cumple=true;
 					}
 					else
@@ -373,7 +513,8 @@ caracteristicas movimiento(char tablero[][7],caracteristicas hassam,posicion ady
 						break;
 		}	
 	}while(cumple==false);
-	cout<<endl<<"Digite 1 para tirar el dado!! "<<endl<<"Recuerde que el minimo numero es 1 y el maximo es 4"<<endl;						//lanzamiento del dado, numero maximo=4, numero minimo=1
+	color(hConsole, 224);																												//linea cambio de color a letra negra y fondo amarillo
+	cout<<endl<<"Digite 1 para tirar el dado!! "<<endl<<"Recuerde que el minimo numero es 1 y el maximo es 4"<<endl;					//lanzamiento del dado, numero maximo=4, numero minimo=1
 	do
 	{
 		color(hConsole, 228);
@@ -387,40 +528,54 @@ caracteristicas movimiento(char tablero[][7],caracteristicas hassam,posicion ady
 					break;
 		}
 	}while(op!=1);
-	cout<<endl<<"El dado marca el numero "<<casillas<<" !!"<<endl;															
-	if(direccion==1)																												//De acuerdo a la direccion, hassam se mueve las casillas marcadas por el dado
-	{																																//Por cada paso que da hassam, se verifica si se ha salido del tablero
-		for(i=1;i<=casillas;i++)																									//En caso de salida del tablero, hassam dará la vuelta correspondiente
+	
+	cout<<endl<<"El dado marca el numero "<<casillas<<" !!"<<endl;		
+														
+	if(direccion==1)																													//De acuerdo a la direccion, hassam se mueve las casillas marcadas por el dado
+	{																																	//Por cada paso que da hassam, se verifica si se ha salido del tablero
+		for(i=1;i<=casillas;i++)																										//En caso de salida del tablero, hassam dará la vuelta correspondiente
 		{
 			hassam.pos.posy--;
 			hassam=mediavuelta(hassam,i,casillas);	
 		}
 	}
 	else if(direccion==2)
-		 {
-			for(i=1;i<=casillas;i++)
-			{
-				hassam.pos.posy++;
-				hassam=mediavuelta(hassam,i,casillas);	
-			}
-		 }
-		 else if(direccion==3)
-		 	  {
-				for(i=1;i<=casillas;i++)
-				{
-					hassam.pos.posx++;	
-					hassam=mediavuelta(hassam,i,casillas);
-				}
-			  }
-			  else
-			  {
-				for(i=1;i<=casillas;i++)
-				{
-					hassam.pos.posx--;	
-					hassam=mediavuelta(hassam,i,casillas);
-				}
-			  }
-	tablero[hassam.pos.posy][hassam.pos.posx]=hassam.hassam;
+	{
+		for(i=1;i<=casillas;i++)
+		{
+			hassam.pos.posy++;
+			hassam=mediavuelta(hassam,i,casillas);	
+		}
+	}
+	else if(direccion==3)
+	{
+		for(i=1;i<=casillas;i++)
+		{
+			hassam.pos.posx++;	
+			hassam=mediavuelta(hassam,i,casillas);
+		}
+	}
+	else
+	{
+		for(i=1;i<=casillas;i++)
+		{
+			hassam.pos.posx--;	
+			hassam=mediavuelta(hassam,i,casillas);
+		}
+	}
+	
+	if((tablero[hassam.pos.posy][hassam.pos.posx]%2==0)&&(tablero[hassam.pos.posy][hassam.pos.posx]!=0))
+	{
+		tablero[hassam.pos.posy][hassam.pos.posx]-=tablero[hassam.pos.posy][hassam.pos.posx]*2;
+	}
+	else if(tablero[hassam.pos.posy][hassam.pos.posx]%2!=0)
+	{
+		tablero[hassam.pos.posy][hassam.pos.posx]-=tablero[hassam.pos.posy][hassam.pos.posx]*2;
+	}
+	else if(tablero[hassam.pos.posy][hassam.pos.posx]==0)
+	{
+		tablero[hassam.pos.posy][hassam.pos.posx]=-1;
+	}
 	adyacentes[0].posy=hassam.pos.posy+1;
 	adyacentes[0].posx=hassam.pos.posx;
 	adyacentes[1].posx=hassam.pos.posx+1;
@@ -430,26 +585,26 @@ caracteristicas movimiento(char tablero[][7],caracteristicas hassam,posicion ady
 	adyacentes[3].posx=hassam.pos.posx-1;
 	adyacentes[3].posy=hassam.pos.posy;
 
-
 	return hassam;
 }
 
 
-char UsoAlfombras(char tablero[][7], caracteristicas hassam, posicion adyacentes[], bool turno, int NumdeAlfombra) {
+char UsoAlfombras(int tablero[][7], posicion adyacentes[], bool turno, int NumdeAlfombra) {
 	
-    bool posicionValida = false;
+    bool posicionValida = true;
     int eleccion=-1;
-	int i,esvalido;
+	int i,esvalido,intentos=0;
 	int NumValido[4]={-1,-1,-1,-1}; 																									// Almacena índices de las opciones válidas
 	int idx,ady_x,ady_y;
-	char alfombra[3];
+	posicion adyacentes2[4];
+	int casillaprevia=-1,casillapreviax,casillapreviay;																												//casilla previa inicia en un valor que nunca estará en más de una posicion (-1 representa a hassam), de este modo cuando se compruebe la segunda alfombra, no tendra problema en verificar que dos casillas sean diferentes				
 	
     esvalido = 0;
-
+	
     for (i = 0; i < 4; i++) {     																										// Verificar posiciones adyacentes precalculadas
         ady_x = adyacentes[i].posx;
         ady_y = adyacentes[i].posy;
-        if (ady_x >= 0 && ady_x < 7 && ady_y >= 0 && ady_y < 7 && tablero[ady_x][ady_y] == char(219)) {
+        if ( (ady_x >= 0) && (ady_x < 7) && (ady_y >= 0) && (ady_y < 7)) {
             cout << esvalido << ". (X= " << ady_x << ", Y= " << ady_y << ") - opcion valida" << endl;
             NumValido[esvalido] = i; 																									// Guardar los índices de las casillas adyacentes válidas
 			esvalido++;																						
@@ -457,99 +612,76 @@ char UsoAlfombras(char tablero[][7], caracteristicas hassam, posicion adyacentes
     }
     cout << "Elija la opcion para la coordenada de la primera mitad de la alfombra (0-" << esvalido-1 << "): ";
     cin >> eleccion;	
-    while(eleccion < 0 || eleccion >= esvalido) {
+    while((eleccion < 0) || (eleccion >= esvalido)) {
+    	cout << "Numero de opcion invalido, por favor intente de nuevo." << endl;
     	cin >> eleccion;																												//eleccion es la posicion del vector donde se guardan los indices de las casillas adyacentes validas
-        cout << "Numero de opcion invalido, por favor intente de nuevo." << endl;
     }
 
-    idx = NumValido[eleccion];																											//idx es el índice de la casilla adyacente a hassam eleigda por el usuario
-    ady_x = adyacentes[idx].posx;
+	idx = NumValido[eleccion];																											//idx es el índice de la casilla adyacente a hassam elegida por el usuario
+	ady_x = adyacentes[idx].posx;
     ady_y = adyacentes[idx].posy;
-
-    itoa(NumdeAlfombra,alfombra,3);																										//coloca la primera mitad de alfombra
-   	tablero[ady_y][ady_x] = alfombra[0];
-	NumdeAlfombra+=2; 
-	cout<<"numdealfombraes "<<NumdeAlfombra<<endl;
+   if(tablero[ady_y][ady_x]!=0){
+   	casillaprevia=tablero[ady_y][ady_x];																								//Guarda el valor de la casilla donde se pone la alfombra solo en caso de que haya otra alfombra 
+  	casillapreviax=ady_x;
+  	casillapreviay=ady_y;
+   }
+    
+   	tablero[ady_y][ady_x] = NumdeAlfombra;																								//coloca la primera mitad de alfombra
+    cout << "Primera mitad de alfombra colocada correctamente en (X= " << ady_x << ", Y= " << ady_y << ")" << endl<<endl;
+    
+    esvalido=0;
+    
+   	adyacentes2[0].posy=adyacentes[idx].posy+1;
+   	adyacentes2[0].posx=adyacentes[idx].posx;
+   	adyacentes2[1].posy=adyacentes[idx].posy;
+   	adyacentes2[1].posx=adyacentes[idx].posx+1;
+   	adyacentes2[2].posy=adyacentes[idx].posy-1;
+   	adyacentes2[2].posx=adyacentes[idx].posx;
+   	adyacentes2[3].posy=adyacentes[idx].posy;
+   	adyacentes2[3].posx=adyacentes[idx].posx-1;
+   	
+   	for(i=0;i<4;i++){
+   		NumValido[i]=-1;
+	}
+	eleccion=-1;
 	
-    cout << "Primera mitad de alfombra colocada correctamente en (X= " << ady_x << ", Y= " << ady_y << ")" << endl;
+	for (i = 0; i < 4; i++){   																											// Verificar posiciones adyacentes precalculadas
+        ady_x = adyacentes2[i].posx;
+        ady_y = adyacentes2[i].posy;
+        if ( (ady_x >= 0) && (ady_x < 7) && (ady_y >= 0) && (ady_y < 7) && (tablero[ady_y][ady_x]>=0)) {
+            cout << esvalido << ". (X= " << ady_x << ", Y= " << ady_y << ") - opcion valida" << endl;
+            NumValido[esvalido] = i; 																									// Guardar los índices de las casillas adyacentes válidas
+			esvalido++;																						
+        }
+	}
+    cout << "Elija la opcion para la coordenada de la primera mitad de la alfombra (0-" << esvalido-1 << "): ";
+    cin >> eleccion;	
+    while((eleccion < 0) || (eleccion >= esvalido)) {
+    	cout << "Numero de opcion invalido, por favor intente de nuevo." <<endl;
+    	cin >> eleccion;																												//eleccion es la posicion del vector donde se guardan los indices de las casillas adyacentes validas
+    }
+    
+	idx = NumValido[eleccion];																											//idx es ahora el índice de la casilla adyacente a la primera mitad elegida por el usuario
+   	ady_x = adyacentes2[idx].posx;
+	ady_y = adyacentes2[idx].posy;
+    while(tablero[ady_y][ady_x]==casillaprevia){
+    	intentos++;
+    	cout<<"No puede colocar una alfombra completa encima de otra completa, intente de nuevo: intento "<<intentos+1<<"/4"<<endl;
+    	cin>>eleccion;
+   		idx = NumValido[eleccion];	 																									//verifica si se esta cubriendo una alfombra completa
+   		ady_x = adyacentes2[idx].posx;
+   		ady_y = adyacentes2[idx].posy;
+   		if(intentos>2){
+   			tablero[casillapreviay][casillapreviax]=casillaprevia;
+   			cout<<" No se puede colocar ninguna alfombra en este turno "<<endl<<endl;
+   			return NumdeAlfombra;
+		   }
+	}
+
+    
+    tablero[ady_y][ady_x] = NumdeAlfombra;																								//coloca la segunda mitad de alfombra
+	NumdeAlfombra+=2; 
+    cout << "Segunda mitad de alfombra colocada correctamente en (X= " << ady_x << ", Y= " << ady_y << ")" <<endl<<"No se cubre ninguna alfombra por completo"<<endl<<endl;
+    
     return NumdeAlfombra;
 }
-
-
-
-
-
-/*
-void UsoAlfombras(char tablero[][7],caracteristicas hassam,posicion adyacentes[])
-{
-    alfombra pos_alfombra;
-    int i,j;
-    int TableroValores[7][7]{0};
-    bool EsAdyacente,SePuede;
-
-    cout<<"Digite donde quiere poner la primera mitad de su alfombra (coordenada x y coordenada y)"<<endl<<"Tenga en cuenta que esta debe ser adyacente a hassam";
-    do
-    {
-        cin>>pos_alfombra.alf1.posx;
-        cin>>pos_alfombra.alf1.posy;
-        EsAdyacente=BuscarAlfombras(adyacentes,pos_alfombra);
-        if(EsAdyacente==false)
-        {
-            cout<<"Lo siento, no puede poner alfombras aqui, intente de nuevo."<<endl;
-        }
-    }while(EsAdyacente==false);
-
-    cout<<"Digite donde quiere poner la segunda mitad de su alfombra (coordenada x y coordenada y)"<<endl;
-
-    cin>>pos_alfombra.alf2.posx;
-    cin>>pos_alfombra.alf2.posy;
-
-    TableroValores[pos_alfombra.alf1.posx][pos_alfombra.alf1.posy]=1;
-    TableroValores[pos_alfombra.alf2.posx][pos_alfombra.alf2.posy]=1;
-    //VerificacionAlfombras(adyacentes,hassam,pos_alfombra)
-
-
-
-
-
-}
-
-bool BuscarAlfombras(posicion adyacentes[],alfombra pos_alfombra)
-{
-    int i;
-
-    for(i=0;i<4;i++)
-    {
-        if((adyacentes[i].posy==pos_alfombra.alf1.posy)&&(adyacentes[i].posx==pos_alfombra.alf1.posx))
-            return true;
-    }
-    return false;
-*/
-
-/*VerificacionAlfombras(posicion adyacentes[],caracteristicas hassam,alfombra pos_alfombra, alfombra TableroValores[][7])
-{
-
-}*/
-
-
-
-
-
-
-
-//PONER ALFOMBRAS
-// se manda estructura de pos de hassam
-//se pide que digite las coordenadas x y de la alfombra que quiere poner
-//digite donde quiere poner su alfombra (coord x ,coord y)
-
-//SE LLAMA A VERIFICAR
-
-
-//VERIFICAR SI SE PUEDE ALFOMBRAS
-// if((val_pos_alf1&&val_pos_alf2==a)||(val_pos_alf1&&val_pos_alf2==b)||(val_pos_alf1&&val_pos_alf2==1))||(val_pos_alf1&&val_pos_alf2==2)) VALIDAR CASOS CON ALFOMBRAS
-// bool=false;
-// intente de nuevo;
-// if((alfombra.alf1.posx>7||alfombra.alf1.posy<0)||(alfombra.alf2.posx>7||alfombra.alf2.posy<0))   VALIDAR QUE NO SE SALGAN DE LOS BORDES
-// if((posiciondehassam==(alfombra.alf2.posx&&alfombra.alf2.posy))||(posiciondehassam==(alfombra.alf1.posx&&alfombra.alf1.posy))) NO SE PUEDE PONER PORQUE AHI ESTA HASSAM PARA DANIEL: MEJORAR DONDE SE GUARDA POSICION DE HASSAM
-// if((alfombra.alf1.posx&&alfombra.alf1.posy)==(alfombra.alf2.posx&&alfombra.alf2.posy)) NO SE PUEDE PONER LAS DOS CASILLAS DE ALFOMBRA EN EL MISMO LUGAR
-
