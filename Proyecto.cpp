@@ -2,6 +2,7 @@
 #include <windows.h>											//linea para poner color
 #include <mmsystem.h>											
 #include <ctime>
+#include <cstdlib>
 //#include <cstdlib>
 #define color SetConsoleTextAttribute							//linea para poner color
 using namespace std;
@@ -28,7 +29,7 @@ struct caracteristicas
 };
 caracteristicas movimiento(char tablero[][7],caracteristicas hassam,posicion adyacentes[]);
 caracteristicas mediavuelta(caracteristicas hassam,int i, int casillas);
-void UsoAlfombras(char tablero[][7],caracteristicas hassam,posicion adyacentes[], int colorCode);
+char UsoAlfombras(char tablero[][7],caracteristicas hassam,posicion adyacentes[], bool turno, int NumdeAlfombra);
 bool BuscarAlfombras(posicion adyacentes[],alfombra pos_alfombra);
 void imprimirtablero(char tablero[][7]);
 
@@ -50,6 +51,7 @@ int main()
     bool ganador=false;
     char tablero[7][7];
     int i,j;
+    int NumdeAlfombra1=0,NumdeAlfombra2=1;
     caracteristicas hassam;
     bool turno=true;
     posicion adyacentes[4];
@@ -88,7 +90,7 @@ int main()
 			cout<<endl<<"Turno de "<<player1.nombre<<" !";
 			hassam=movimiento(tablero,hassam,adyacentes);
             imprimirtablero(tablero);
-            UsoAlfombras(tablero,hassam,adyacentes,'R');
+            NumdeAlfombra1=UsoAlfombras(tablero,hassam,adyacentes,turno,NumdeAlfombra1);
             turno=false;
 		}
 		else
@@ -96,7 +98,7 @@ int main()
 			cout<<endl<<"Turno de "<<player2.nombre<<" !";
 			hassam=movimiento(tablero,hassam,adyacentes);
             imprimirtablero(tablero);
-            UsoAlfombras(tablero,hassam,adyacentes,'A');
+            NumdeAlfombra2=UsoAlfombras(tablero,hassam,adyacentes,turno,NumdeAlfombra2);
             turno=true;
 		}
 	}
@@ -111,7 +113,8 @@ int main()
 void imprimirtablero(char tablero[][7])																//imprime el tablero
 {
 	int i,j;
-		cout<<char(201)<<char(187)<<"   ";
+		cout<<"                    X"<<endl<<endl<<"        0   1   2   3   4   5   6"<<endl;
+		cout<<"       "<<char(201)<<char(187)<<"   ";
 		for(i=0;i<3;i++)
 		{
 			cout<<char(201)<<char(205)<<char(205)<<char(205)<<char(187)<<"   ";
@@ -119,9 +122,17 @@ void imprimirtablero(char tablero[][7])																//imprime el tablero
 		cout<<endl;
 		for(i=0;i<7;i++)																    	
 		{
+			if(i!=3)
+			{
+				cout<<"     "<<i<<" ";
+			}
+			else
+			{
+				cout<<" Y   "<<i<<" ";
+			}
 			if(i%2==0)
 			{
-				cout<<char(200);
+				cout<<char(200);     
 			}
 			else
 			{
@@ -151,21 +162,19 @@ void imprimirtablero(char tablero[][7])																//imprime el tablero
 			{
 				if(i%2!=0)
 				{
-					cout<<char(186);
-					cout<<"                         ";
+					cout<<"       "<<char(186)<<"                         ";
 				}
 				else
-				{
-					cout<<"                          ";
-					cout<<char(186);
-				}
+				{ 
+					cout<<"                                 "<<char(186);;
+				} 
 			}
 			if(i!=6)
 			{
 				cout<<endl;	
 			}
 		}
-		cout<<" ";
+		cout<<"        ";
 		for(i=0;i<3;i++)
 		{
 			if(i!=2)
@@ -426,21 +435,22 @@ caracteristicas movimiento(char tablero[][7],caracteristicas hassam,posicion ady
 }
 
 
-void UsoAlfombras(char tablero[][7], caracteristicas hassam, posicion adyacentes[], int colorCode) {
+char UsoAlfombras(char tablero[][7], caracteristicas hassam, posicion adyacentes[], bool turno, int NumdeAlfombra) {
+	
     bool posicionValida = false;
     int eleccion=-1;
 	int i,esvalido;
 	int NumValido[4]={-1,-1,-1,-1}; 																									// Almacena índices de las opciones válidas
 	int idx,ady_x,ady_y;
+	char alfombra[3];
 	
-    cout << "Seleccione la posicion inicial para la alfombra adyacente a Hassam (no puede cubrir a Hassam):" << endl;
     esvalido = 0;
 
     for (i = 0; i < 4; i++) {     																										// Verificar posiciones adyacentes precalculadas
         ady_x = adyacentes[i].posx;
         ady_y = adyacentes[i].posy;
         if (ady_x >= 0 && ady_x < 7 && ady_y >= 0 && ady_y < 7 && tablero[ady_x][ady_y] == char(219)) {
-            cout << esvalido << ". (" << ady_x << ", " << ady_y << ") - opcion valida" << endl;
+            cout << esvalido << ". (X= " << ady_x << ", Y= " << ady_y << ") - opcion valida" << endl;
             NumValido[esvalido] = i; 																									// Guardar los índices de las casillas adyacentes válidas
 			esvalido++;																						
         }
@@ -455,8 +465,14 @@ void UsoAlfombras(char tablero[][7], caracteristicas hassam, posicion adyacentes
     idx = NumValido[eleccion];																											//idx es el índice de la casilla adyacente a hassam eleigda por el usuario
     ady_x = adyacentes[idx].posx;
     ady_y = adyacentes[idx].posy;
-    tablero[ady_y][ady_x] = '0';  																										// Colocar la primera mitad de la alfombra
-    cout << "Alfombra colocada correctamente en (" << ady_x << ", " << ady_y << ")" << endl;
+
+    itoa(NumdeAlfombra,alfombra,3);																										//coloca la primera mitad de alfombra
+   	tablero[ady_y][ady_x] = alfombra[0];
+	NumdeAlfombra+=2; 
+	cout<<"numdealfombraes "<<NumdeAlfombra<<endl;
+	
+    cout << "Primera mitad de alfombra colocada correctamente en (X= " << ady_x << ", Y= " << ady_y << ")" << endl;
+    return NumdeAlfombra;
 }
 
 
