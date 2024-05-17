@@ -76,17 +76,14 @@ int main()
     cin.getline(eliminador,1,'\n');																										//getline lee lo que habia previamente en la memoria y que no quedó en "op" por lo cual lee \n y eso queda en eliminador[0]
     switch(op)
 	{																														
-    	case 1: 
-		{
+    	case 1: {
     		cout<<"Con que nombre aparece su archivo de partida?"<<endl;
     			cin.getline(nombrepartida,100,'\n');																					//de no ser por el comentario de arriba, este getline leería el \n del cin y se cerraría automáticamente
     			ifstream partida(nombrepartida);																						//declara la entrada para leer un tablero guardado en un archivo .txt
-    			if(!partida)
-				{
+    			if(!partida){
     				cout<<"Su archivo de partida no ha sido encontrado, verifique: "<<endl<<"1. Haber escrito .txt al final del nombre del archivo"<<endl<<"2. Tener el archivo en la misma carpeta donde tiene este programa"<<endl<<"3. De ser el caso, haber escrito los respectivos espacios en el nombre del archivo "<<endl<<endl;
 				}
-				else
-				{
+				else{
 					partidacargada=true;
 					partida>>hassam.hassam;
 					for(i=0;i<7;i++)
