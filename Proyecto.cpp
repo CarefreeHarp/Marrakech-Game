@@ -877,7 +877,7 @@ char UsoAlfombras(int tablero[][7], posicion adyacentes[], int NumdeAlfombra) {
 			esvalido++;																						
         }
 	}
-    cout << "Elija la opcion para la coordenada de la primera mitad de la alfombra (0-" << esvalido-1 << "): ";
+    cout << "Elija la opcion para la coordenada de la segunda mitad de la alfombra (0-" << esvalido-1 << "): ";
     cin >> eleccion;	
     while((eleccion < 0) || (eleccion >= esvalido)) {
     	cout << "Numero de opcion invalido, por favor intente de nuevo." <<endl;
