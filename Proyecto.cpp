@@ -1,10 +1,14 @@
 #include <iostream>
-#include <windows.h>																													//linea para poner color
-#include <mmsystem.h>											
-#include <ctime>
-#include <cstdlib>
-#define color SetConsoleTextAttribute																									//linea para poner color
+#include <windows.h>																													//librería para poner color
+#include <fstream>																														//librería para archivoc
+#include <ctime>																														//Librería para el dado						
 using namespace std;
+
+#define color SetConsoleTextAttribute																									//linea para poder poner color
+
+
+
+
 struct player																															//declaracion de player como estructura
 {
 	char nombre[30];
@@ -21,15 +25,26 @@ struct caracteristicas
 	posicion pos;
 	char hassam;
 };
+struct Resultadoimpuestos
+{
+	int impuestos;
+	int posdelvector;
+};
+struct Puntosfinales
+{
+	int puntos1=0;
+	int puntos2=0;
+};
+
+
+
+
 caracteristicas movimiento(int tablero[][7],caracteristicas hassam,posicion adyacentes[]);
 caracteristicas mediavuelta(caracteristicas hassam,int i, int casillas);
-char UsoAlfombras(int tablero[][7],posicion adyacentes[], bool turno, int NumdeAlfombra);
+char UsoAlfombras(int tablero[][7],posicion adyacentes[], int NumdeAlfombra);
 void imprimirtablero(int tablero[][7],caracteristicas hassam);
-
-
-
-
-
+Resultadoimpuestos evaluarimpuestos(int tablero[][7],int posx,int posy,bool turno,posicion evaluadas[],Resultadoimpuestos resultadoimpuestos);
+Puntosfinales calculo(int tablero[][7],player player1,player player2,Puntosfinales puntosfinales);
 
 
 
@@ -42,44 +57,231 @@ int main()
 	color(hConsole, 224);																												//linea cambio de color a letra negra y fondo amarillo
     player player1,player2;																												//declaracion de variables
     bool ganador=false;
-    int tablero[7][7];
+    int tablero[7][7];				   
     int i,j,turnos=1;
     int NumdeAlfombra1=3,NumdeAlfombra2=2;
+    int posx,posy;
+    int op;
+    bool turno;
+    bool partidacargada=false;
+    char nombrepartida[100];
+    char eliminador[1];
     caracteristicas hassam;
-    bool turno=true;
-    posicion adyacentes[4];
+    posicion adyacentes[4],evaluadas[49];
+    Resultadoimpuestos resultadoimpuestos;
+    Puntosfinales puntosfinales;
     
-    
-    player1.alfombras=10;																												//establecer valores iniciales
-    player2.alfombras=10;
-    player1.dirhams=20;
-    player2.dirhams=20;
-	cout<<"Digite el nombre del primer jugador!"<<endl;
-	cin.getline(player1.nombre,30,'\n');
-	cout<<"Digite el nombre del segundo jugador!"<<endl;
-	cin.getline(player2.nombre,30,'\n');
-	
-	for(i=0;i<7;i++)																													//llena la matriz de alfombras y coloca a hassam en el medio
-	{
-		for(j=0;j<7;j++)
+    cout<<"Bienvenido, que desea hacer?"<<endl<<"1. Cargar una partida"<<endl<<"x. presione cualquier numero para empezar a jugar"<<endl;
+    cin>>op;																															//despues del cin>>op, se lee la opción pero en la memoria queda un \n como el enter que da el usuario para continuar
+    cin.getline(eliminador,1,'\n');																										//getline lee lo que habia previamente en la memoria y que no quedó en "op" por lo cual lee \n y eso queda en eliminador[0]
+    switch(op)
+	{																														
+    	case 1: 
 		{
-			tablero[i][j]=0;
-			if((i==3)&&(j==3))
+    		cout<<"Con que nombre aparece su archivo de partida?"<<endl;
+    			cin.getline(nombrepartida,100,'\n');																					//de no ser por el comentario de arriba, este getline leería el \n del cin y se cerraría automáticamente
+    			ifstream partida(nombrepartida);																						//declara la entrada para leer un tablero guardado en un archivo .txt
+    			if(!partida)
+				{
+    				cout<<"Su archivo de partida no ha sido encontrado, verifique: "<<endl<<"1. Haber escrito .txt al final del nombre del archivo"<<endl<<"2. Tener el archivo en la misma carpeta donde tiene este programa"<<endl<<"3. De ser el caso, haber escrito los respectivos espacios en el nombre del archivo "<<endl<<endl;
+				}
+				else
+				{
+					partidacargada=true;
+					partida>>hassam.hassam;
+					for(i=0;i<7;i++)
+					{
+						for(j=0;j<7;j++)
+						{
+							partida>>tablero[i][j];
+							if(tablero[i][j]<0)
+							{
+								hassam.pos.posx=j;
+								hassam.pos.posy=i;
+							}
+						}
+					}
+					partida>>player1.alfombras;
+					partida>>player1.dirhams;
+					partida>>player2.alfombras;
+					partida>>player2.dirhams;
+					partida>>turnos;
+					partida>>turno;
+				}
+    			break;
+		}
+		default: break;
+    
+	}
+	if(partidacargada==false){
+		for(i=0;i<7;i++)																												//llena la matriz de alfombras y coloca a hassam en el medio en caso de que no se haya cargado una partida
+		{
+			for(j=0;j<7;j++)
 			{
-				tablero[i][j]=-1;
-				hassam.pos.posx=j;
-				hassam.pos.posy=i;
-				hassam.hassam='v';
+				tablero[i][j]=0;
+				if((i==3)&&(j==3))
+				{
+					tablero[i][j]=-1;
+					hassam.pos.posx=j;
+					hassam.pos.posy=i;
+					hassam.hassam='v';
+				}
 			}
 		}
+  	    player1.alfombras=10;																												//establecer valores iniciales
+   	    player2.alfombras=10;
+    	player1.dirhams=20;
+   		player2.dirhams=20;
+   		turno=true;
 	}
-	color(hConsole,228);
-	cout<<endl<<" QUE EMPIECE EL JUEGO!!!"<<endl<<"SE LE OTORGA: "<<endl<<"1) 20 DIRHAMS A CADA UNO"<<endl<<"2) 10 ALFOMBRAS ROJAS A "<<player1.nombre<<" Y 10 ALFOMBRAS AZULES A "<<player2.nombre<<endl;
-	color(hConsole,224);
+	
+	cout<<endl<<"Digite el nombre del primer jugador! (jugador rojo)"<<endl;
+	cin.getline(player1.nombre,30,'\n');
+	cout<<"Digite el nombre del segundo jugador! (jugador azul)"<<endl;
+	cin.getline(player2.nombre,30,'\n');
+	
+
 	while(ganador==false)																												//mientras no encuentre ganador, se ejecutará todo el juego
 	{
-		imprimirtablero(tablero,hassam);
-/*		for(i=0;i<7;i++)																												//ACTIVAR PARA IMPRIMIR LA MATRIZ NUMÉRICA
+		imprimirtablero(tablero,hassam);																								//DESACTIVAR PARA IMPRIMIR LA MATRIZ EN FORMA NUMÉRICA
+/*		for(i=0;i<7;i++)																												//ACTIVAR PARA IMPRIMIR LA MATRIZ EN FORMA NUMÉRICA
+    	{
+			for(j=0;j<7;j++)
+			{
+				cout<<tablero[i][j]<<"\t";
+			}
+			cout<<endl;
+		}*/
+		if(turnos!=1){
+			cout<<endl<<"Desea guardar esta partida?"<<endl<<"1. Guardar"<<endl<<"2. Seguir jugando"<<endl<<"0. Salir del juego"<<endl;
+			cin>>op;
+			switch(op)
+			{
+				case 1: 
+				{
+					cout<<"Digite el nombre de su partida con .txt al final"<<endl;
+						cin.getline(eliminador,1,'\n');
+						cin.getline(nombrepartida,100,'\n');
+						ofstream guardar(nombrepartida);
+						if(!guardar)
+						{
+							cout<<"No se pudo crear el archivo de la partida"<<endl;
+						}
+						else
+						{
+							guardar<<hassam.hassam<<endl;
+							for(i=0;i<7;i++)
+							{
+								for(j=0;j<7;j++)
+								{
+									guardar<<tablero[i][j]<<" ";
+								}
+								guardar<<endl;
+							}	
+							guardar<<player1.alfombras<<" "<<player1.dirhams<<" "<<player2.alfombras<<" "<<player2.dirhams;
+							guardar<<" "<<turnos<<" "<<turno;
+						}	
+					
+					break;
+				}
+						
+				case 2:	break;
+				
+				case 0: exit(1);
+						break;
+						
+				default: break;
+			}	
+		}
+
+		
+		color(hConsole,228); 																											//Decoración de cada turno
+		cout<<endl<<endl<<"\t\t\t\t\t\t\tTURNO #"<<turnos<<endl;
+		turnos++;
+		color(hConsole,224);
+		
+		color(hConsole,228);
+		cout<<"A "<<player1.nombre;
+		color(hConsole,224);
+		cout<<" LE QUEDAN "<<player1.alfombras<<" ALFOMBRAS Y "<<player1.dirhams<<" DIRHAMS"<<endl;
+			
+		color(hConsole,233);
+		cout<<"A "<<player2.nombre;
+		color(hConsole,224);
+		cout<<" LE QUEDAN "<<player2.alfombras<<" ALFOMBRAS Y "<<player2.dirhams<<" DIRHAMS"<<endl;										//Fin de la decoración de cada turno
+			
+		if(turno==true){																												//Indica el turno del jugador correspondiente																								
+			cout<<endl<<"Turno de ";
+			color(hConsole,228);
+			cout<<player1.nombre;
+			color(hConsole,224);
+			cout<<" !";
+		}
+		else{
+			cout<<endl<<"Turno de ";
+			color(hConsole,233);
+			cout<<player2.nombre;
+			color(hConsole,224);
+			cout<<" !";
+		}
+		
+		hassam=movimiento(tablero,hassam,adyacentes);																					//Movimiento de hassam
+		
+		for(i=0;i<49;i++)																												//Reinicio de variables para la función de impuestos
+		{
+			evaluadas[i].posx=-1;
+			evaluadas[i].posy=-1;
+		}
+		resultadoimpuestos.posdelvector=0;																								//EL VECTOR EVALUADAS ES CREADO CON EL OBJETIVO DE QUE EN LA FUNCIÓN RECURSIVA, YA SE SEPA QUE CASILLAS SE EVALUARON
+		resultadoimpuestos.impuestos=0;																									
+		posy=hassam.pos.posy;
+		posx=hassam.pos.posx;																											//La posicion inicial que recibe la funcion de calcular impuestos es la de hassam para verificar si en un comienzo, debe pagar almenos 1 dirham
+		
+		resultadoimpuestos=evaluarimpuestos(tablero,posx,posy,turno,evaluadas,resultadoimpuestos);
+		if(turno==true){
+			if(player1.dirhams>resultadoimpuestos.impuestos){
+				player1.dirhams-=resultadoimpuestos.impuestos;																			//Se cobran los impuestos
+				player2.dirhams+=resultadoimpuestos.impuestos;
+			}
+			else{
+				player2.dirhams+=player1.dirhams;
+				player1.dirhams=0;																										//Se cobran los impuestos
+			}
+			if(resultadoimpuestos.impuestos>1)																							//Si hay impuestos para cobrar, se da el mensaje
+			{		
+				color(hConsole,228);
+				cout<<endl<<player1.nombre;
+				color(hConsole,224);
+				cout<<" TUVO QUE PAGAR "<<resultadoimpuestos.impuestos<<" DIRHAMS A ";
+				color(hConsole,233);
+				cout<<player2.nombre<<endl;
+				color(hConsole,224);
+			}
+		}
+		else{
+			if(player1.dirhams>resultadoimpuestos.impuestos){
+				player2.dirhams-=resultadoimpuestos.impuestos;																			//Se cobran los impuestos
+				player1.dirhams+=resultadoimpuestos.impuestos;
+			}
+			else{
+				player1.dirhams+=player1.dirhams;
+				player2.dirhams=0;																										//Se cobran los impuestos
+			}
+			if(resultadoimpuestos.impuestos>1)
+			{
+				color(hConsole,233);
+				cout<<endl<<player2.nombre;
+				color(hConsole,224);
+				cout<<" TUVO QUE PAGAR "<<resultadoimpuestos.impuestos<<" DIRHAMS A ";
+				color(hConsole,228);
+				cout<<player1.nombre<<endl;
+				color(hConsole,224);
+			}	
+		}			
+		
+		
+        imprimirtablero(tablero,hassam);																								//DESACTIVAR PARA IMPRIMIR LA MATRIZ EN FORMA NUMÉRICA
+/*		for(i=0;i<7;i++)																												//ACTIVAR PARA IMPRIMIR LA MATRIZ EN FORMA NUMÉRICA
 		{
 			for(j=0;j<7;j++)
 			{
@@ -87,57 +289,80 @@ int main()
 			}
 			cout<<endl;
 		} */
-		if(turno==true)
-		{
-			color(hConsole, 228); 
-			cout<<endl<<endl<<"\t\t\t\t\t\t\tTURNO #"<<turnos<<endl;
-			turnos++;
-			color(hConsole, 224);
-			cout<<"A "<<player1.nombre<<" LE QUEDAN "<<player1.alfombras<<" ALFOMBRAS"<<endl;
-			cout<<"A "<<player2.nombre<<" LE QUEDAN "<<player2.alfombras<<" ALFOMBRAS"<<endl;
-			cout<<endl<<endl<<"Turno de "<<player1.nombre<<" !";
-			
-			hassam=movimiento(tablero,hassam,adyacentes);
-			
-            imprimirtablero(tablero,hassam);
-/*			for(i=0;i<7;i++)																												//ACTIVAR PARA IMPRIMIR LA MATRIZ NUMÉRICA
-			{
-				for(j=0;j<7;j++)
-				{
-					cout<<tablero[i][j]<<"\t";
-				}
-				cout<<endl;
-			} */
-            NumdeAlfombra1=UsoAlfombras(tablero,adyacentes,turno,NumdeAlfombra1);
+		if(turno==true){																												//Coloca las alfombras respectivas
+            NumdeAlfombra1=UsoAlfombras(tablero,adyacentes,NumdeAlfombra1);
             player1.alfombras--;
-            turno=false;
 		}
-		else
-		{
-			color(hConsole, 228); 
-			cout<<endl<<endl<<"\t\t\t\t\t\t\tTURNO #"<<turnos<<endl;
-			turnos++;
-			color(hConsole, 224);
-			cout<<"A "<<player1.nombre<<" LE QUEDAN "<<player1.alfombras<<" ALFOMBRAS"<<endl;
-			cout<<"A "<<player2.nombre<<" LE QUEDAN "<<player2.alfombras<<" ALFOMBRAS"<<endl;
-			cout<<endl<<"Turno de "<<player2.nombre<<" !";
-			
-			hassam=movimiento(tablero,hassam,adyacentes);
-						
-           imprimirtablero(tablero,hassam);
-/*			for(i=0;i<7;i++)																												//ACTIVAR PARA IMPRIMIR LA MATRIZ NUMÉRICA
-			{
-				for(j=0;j<7;j++)
-				{
-					cout<<tablero[i][j]<<"\t";
-				}
-				cout<<endl;
-			} */
-            NumdeAlfombra2=UsoAlfombras(tablero,adyacentes,turno,NumdeAlfombra2);
+		else{
+			NumdeAlfombra2=UsoAlfombras(tablero,adyacentes,NumdeAlfombra2);	
             player2.alfombras--;
-            turno=true;
+		}
+		
+		if(turno==true){																												//Cambia de turno
+			turno=false;
+		}
+		else{
+			turno=true;
+		}
+		
+		if((player1.alfombras==0)&&(player2.alfombras==0)){
+			puntosfinales=calculo(tablero,player1,player2,puntosfinales);
+			color(hConsole,228);
+			cout<<"EL ";
+			color(hConsole,233);
+			cout<<"GANADOR ";
+			color(hConsole,228);
+			cout<<"DE ";
+			color(hConsole,233);
+			cout<<"ESTA ";
+			color(hConsole, 228);
+			cout<<"PARTIDA ";
+			color(hConsole, 233);
+			cout<<"ES ";
+			if(puntosfinales.puntos1==puntosfinales.puntos2){
+				if(player1.dirhams>player2.dirhams){
+					color(hConsole, 228);
+					cout<<player1.nombre<<" !!!!!!!!!!";
+					color(hConsole, 224);
+				}
+				else if(player2.dirhams>player1.dirhams){
+					cout<<player2.nombre<<" !!!!!!!!!!";
+					color(hConsole, 224);
+				}
+				else{
+					color(hConsole, 224);
+					cout<<" EMPATE ";
+				}
+			}
+			else{
+				if(puntosfinales.puntos1>puntosfinales.puntos2){
+					color(hConsole, 228);
+					cout<<player1.nombre<<" !!!!!!!!!!";
+					color(hConsole, 224);
+				}
+				else{
+					cout<<player2.nombre<<" !!!!!!!!!!";
+					color(hConsole, 224);
+				}
+			}
+			ganador=true;
 		}
 	}
+	cout<<endl<<endl<<"RESULTADOS FINALES:"<<endl;
+	color(hConsole, 228);
+	cout<<player1.nombre;
+	color(hConsole, 224);
+	cout<<": puntos totales = "<<puntosfinales.puntos1;
+	cout<<", alfombras en pantalla = "<<puntosfinales.puntos1-player1.dirhams;
+	cout<<", dirhams = "<<player1.dirhams<<endl;
+	color(hConsole, 233);
+	cout<<player2.nombre;
+	color(hConsole, 224);
+	cout<<": puntos totales = "<<puntosfinales.puntos2;
+	cout<<", alfombras en pantalla = "<<puntosfinales.puntos2-player2.dirhams;
+	cout<<", dirhams = "<<player2.dirhams<<endl<<endl<<endl;
+	imprimirtablero(tablero,hassam);
+	
 	return 0;
 }
 
@@ -380,7 +605,7 @@ caracteristicas mediavuelta(caracteristicas hassam,int i, int casillas)
 	 					if(hassam.pos.posx==6)
 	 					{
 	 						hassam.pos.posy=6;
-	 						hassam.hassam='>';
+	 						hassam.hassam='<';
 	 						hassam.pos.posx-=casillas-i;
 	 						hassam.pos.posy-=casillas-i;
 	 						vueltarealizada=true;
@@ -509,7 +734,8 @@ caracteristicas movimiento(int tablero[][7],caracteristicas hassam,posicion adya
 						cout<<"Hassam esta mirando en la direccion contraria y no puede voltear 180 grados, intente de nuevo!"<<endl;
 					}
 						break;	
-			default: cout<<"opcion inexistente"<<endl;
+			default: 	cout<<"opcion inexistente"<<endl;
+						cumple=false;
 						break;
 		}	
 	}while(cumple==false);
@@ -589,7 +815,7 @@ caracteristicas movimiento(int tablero[][7],caracteristicas hassam,posicion adya
 }
 
 
-char UsoAlfombras(int tablero[][7], posicion adyacentes[], bool turno, int NumdeAlfombra) {
+char UsoAlfombras(int tablero[][7], posicion adyacentes[], int NumdeAlfombra) {
 	
     bool posicionValida = true;
     int eleccion=-1;
@@ -684,4 +910,94 @@ char UsoAlfombras(int tablero[][7], posicion adyacentes[], bool turno, int Numde
     cout << "Segunda mitad de alfombra colocada correctamente en (X= " << ady_x << ", Y= " << ady_y << ")" <<endl<<"No se cubre ninguna alfombra por completo"<<endl<<endl;
     
     return NumdeAlfombra;
+}
+
+
+
+
+Resultadoimpuestos evaluarimpuestos(int tablero[][7],int posx,int posy,bool turno,posicion evaluadas[],Resultadoimpuestos resultadoimpuestos){
+	bool evaluada=false;
+	int i;
+		for(i=0;i<49;i++){
+			if((posx==evaluadas[i].posx)&&(posy==evaluadas[i].posy)){
+				evaluada=true;
+			}
+		}
+		if(evaluada==false){
+			if(turno==true){
+				if((tablero[posy][posx]%2==0)&&(tablero[posy][posx]!=0)){
+					evaluadas[resultadoimpuestos.posdelvector].posx=posx;
+					evaluadas[resultadoimpuestos.posdelvector].posy=posy;
+					resultadoimpuestos.posdelvector++;
+					resultadoimpuestos.impuestos++;
+					if(posx<6){
+						posx++;
+						resultadoimpuestos=evaluarimpuestos(tablero,posx,posy,turno,evaluadas,resultadoimpuestos);
+						posx--;
+					}
+					if(posy<6){
+						posy++;
+						resultadoimpuestos=evaluarimpuestos(tablero,posx,posy,turno,evaluadas,resultadoimpuestos);
+						posy--;
+					}
+					if(posx>0){
+						posx--;
+						resultadoimpuestos=evaluarimpuestos(tablero,posx,posy,turno,evaluadas,resultadoimpuestos);
+						posx++;
+					}
+					if(posy>0){
+						posy--;
+						resultadoimpuestos=evaluarimpuestos(tablero,posx,posy,turno,evaluadas,resultadoimpuestos);
+					}
+				}
+			}
+			else{
+				if((tablero[posy][posx]%2!=0)&&(tablero[posy][posx]!=-1)){
+					evaluadas[resultadoimpuestos.posdelvector].posx=posx;
+					evaluadas[resultadoimpuestos.posdelvector].posy=posy;
+					resultadoimpuestos.posdelvector++;
+					resultadoimpuestos.impuestos++;
+					if(posx<6){
+						posx++;
+						resultadoimpuestos=evaluarimpuestos(tablero,posx,posy,turno,evaluadas,resultadoimpuestos);
+						posx--;
+					}
+					if(posy<6){
+						posy++;
+						resultadoimpuestos=evaluarimpuestos(tablero,posx,posy,turno,evaluadas,resultadoimpuestos);
+						posy--;
+					}
+					if(posx>0){
+						posx--;
+						resultadoimpuestos=evaluarimpuestos(tablero,posx,posy,turno,evaluadas,resultadoimpuestos);
+						posx++;
+					}
+					if(posy>0){
+						posy--;
+						resultadoimpuestos=evaluarimpuestos(tablero,posx,posy,turno,evaluadas,resultadoimpuestos);
+						posy++;
+					}
+				}
+			}
+		}
+	return resultadoimpuestos;
+}
+
+
+
+Puntosfinales calculo(int tablero[][7],player player1,player player2,Puntosfinales puntosfinales){
+	int i,j;
+	for(i=0;i<7;i++){
+		for(j=0;j<7;j++){
+			if((tablero[i][j]%2!=0)&&(tablero[i][j]!=-1)){
+				puntosfinales.puntos1++;
+			}
+			else if((tablero[i][j]%2==0)&&(tablero[i][j]!=0)){
+				puntosfinales.puntos2++;
+			}
+		}
+	}
+	puntosfinales.puntos1+=player1.dirhams;
+	puntosfinales.puntos2+=player2.dirhams;
+	return puntosfinales;
 }
