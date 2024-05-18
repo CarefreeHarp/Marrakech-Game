@@ -359,7 +359,8 @@ int main()
 	cout<<", alfombras en pantalla = "<<puntosfinales.puntos2-player2.dirhams;
 	cout<<", dirhams = "<<player2.dirhams<<endl<<endl<<endl;
 	imprimirtablero(tablero,hassam);
-	
+	cout<<"Digite una tecla para salir"<<endl;
+	cin>>op;
 	return 0;
 }
 
@@ -778,8 +779,7 @@ caracteristicas movimiento(int tablero[][7],caracteristicas hassam,posicion adya
 			hassam=mediavuelta(hassam,i,casillas);
 		}
 	}
-	else
-	{
+	else{
 		for(i=1;i<=casillas;i++)
 		{
 			hassam.pos.posx--;	
