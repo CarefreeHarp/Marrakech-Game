@@ -828,12 +828,12 @@ char UsoAlfombras(int tablero[][7], posicion adyacentes[], int NumdeAlfombra) {
         ady_x = adyacentes[i].posx;
         ady_y = adyacentes[i].posy;
         if ( (ady_x >= 0) && (ady_x < 7) && (ady_y >= 0) && (ady_y < 7)) {
-            cout << esvalido << ". (X= " << ady_x << ", Y= " << ady_y << ") - opcion valida" << endl;
+            cout << esvalido << ". (X= " << ady_x << ", Y= " << ady_y << ") - opcion" << endl;
             NumValido[esvalido] = i; 																									// Guardar los índices de las casillas adyacentes válidas
 			esvalido++;																						
         }
     }
-    cout << "Elija la opcion para la coordenada de la primera mitad de la alfombra (0-" << esvalido-1 << "): ";
+    cout << "Elija la opcion para la coordenada de la primera mitad de la alfombra (0 - " << esvalido-1 << "): ";
     cin >> eleccion;	
     while((eleccion < 0) || (eleccion >= esvalido)) {
     	cout << "Numero de opcion invalido, por favor intente de nuevo." << endl;
@@ -872,12 +872,12 @@ char UsoAlfombras(int tablero[][7], posicion adyacentes[], int NumdeAlfombra) {
         ady_x = adyacentes2[i].posx;
         ady_y = adyacentes2[i].posy;
         if ( (ady_x >= 0) && (ady_x < 7) && (ady_y >= 0) && (ady_y < 7) && (tablero[ady_y][ady_x]>=0)) {
-            cout << esvalido << ". (X= " << ady_x << ", Y= " << ady_y << ") - opcion valida" << endl;
+            cout << esvalido << ". (X= " << ady_x << ", Y= " << ady_y << ") - opcion" << endl;
             NumValido[esvalido] = i; 																									// Guardar los índices de las casillas adyacentes válidas
 			esvalido++;																						
         }
 	}
-    cout << "Elija la opcion para la coordenada de la segunda mitad de la alfombra (0-" << esvalido-1 << "): ";
+    cout << "Elija la opcion para la coordenada de la segunda mitad de la alfombra (0 - " << esvalido-1 << "): ";
     cin >> eleccion;	
     while((eleccion < 0) || (eleccion >= esvalido)) {
     	cout << "Numero de opcion invalido, por favor intente de nuevo." <<endl;
