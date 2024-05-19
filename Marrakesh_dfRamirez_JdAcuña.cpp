@@ -516,14 +516,11 @@ void imprimirtablero(int tablero[][7],caracteristicas hassam)																			
 
 
 
-caracteristicas mediavuelta(caracteristicas hassam,int i, int casillas)
-{
+caracteristicas mediavuelta(caracteristicas hassam,int i, int casillas){
 	bool vueltarealizada=false;
-	if(hassam.pos.posx==-1)
-	{
+	if(hassam.pos.posx==-1){
 	 	cout<<"Hassam se sale por la izquierda del tablero!!"<<endl<<"Se ha hecho un giro!!"<<endl;										//verificacion de cada una de las posibles salidas del tablero
-	 	if(hassam.pos.posy==0)
-	 	{
+	 	if(hassam.pos.posy==0){
 	 		hassam.pos.posx=0;
 	 		hassam.hassam='v';
 	 		hassam.pos.posy+=casillas-i;
@@ -824,6 +821,7 @@ char UsoAlfombras(int tablero[][7], posicion adyacentes[], int NumdeAlfombra) {
 	
     esvalido = 0;
 	
+	cout << "Elija la opcion para la coordenada de la primera mitad de la alfombra "<<endl;
     for (i = 0; i < 4; i++) {     																										// Verificar posiciones adyacentes precalculadas
         ady_x = adyacentes[i].posx;
         ady_y = adyacentes[i].posy;
@@ -833,10 +831,11 @@ char UsoAlfombras(int tablero[][7], posicion adyacentes[], int NumdeAlfombra) {
 			esvalido++;																						
         }
     }
-    cout << "Elija la opcion para la coordenada de la primera mitad de la alfombra (0 - " << esvalido-1 << "): ";
+    cout<<"Opcion: ";
     cin >> eleccion;	
     while((eleccion < 0) || (eleccion >= esvalido)) {
     	cout << "Numero de opcion invalido, por favor intente de nuevo." << endl;
+    	cout<<"Opcion: ";
     	cin >> eleccion;																												//eleccion es la posicion del vector donde se guardan los indices de las casillas adyacentes validas
     }
 
@@ -867,7 +866,7 @@ char UsoAlfombras(int tablero[][7], posicion adyacentes[], int NumdeAlfombra) {
    		NumValido[i]=-1;
 	}
 	eleccion=-1;
-	
+	cout << "Elija la opcion para la coordenada de la segunda mitad de la alfombra "<<endl;
 	for (i = 0; i < 4; i++){   																											// Verificar posiciones adyacentes precalculadas
         ady_x = adyacentes2[i].posx;
         ady_y = adyacentes2[i].posy;
@@ -877,10 +876,11 @@ char UsoAlfombras(int tablero[][7], posicion adyacentes[], int NumdeAlfombra) {
 			esvalido++;																						
         }
 	}
-    cout << "Elija la opcion para la coordenada de la segunda mitad de la alfombra (0 - " << esvalido-1 << "): ";
+	cout<<"Opcion: ";
     cin >> eleccion;	
     while((eleccion < 0) || (eleccion >= esvalido)) {
     	cout << "Numero de opcion invalido, por favor intente de nuevo." <<endl;
+    	cout<<"Opcion: ";
     	cin >> eleccion;																												//eleccion es la posicion del vector donde se guardan los indices de las casillas adyacentes validas
     }
     
